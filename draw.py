@@ -50,6 +50,24 @@ class TextDraw(BaseCanvasDraw):
         self.style['text'] = unicode(value)
         self.update()
 
+    @property
+    def x(self):
+        return self.coords[0]
+
+    @x.setter
+    def x(self, value):
+        self.coords[0] = value
+        self.update()
+
+    @property
+    def y(self):
+        return self.coords[1]
+
+    @y.setter
+    def y(self, value):
+        self.coords[1] = value
+        self.update()
+
 class ImageDraw(BaseCanvasDraw):
     def __init__(self, canvas, x, y, image, **kws):
         '''
@@ -242,19 +260,44 @@ class RoundedRectangleDraw(PolygonDraw):
     @coords.setter
     def coords(self, value):
         self.__coords = value
+        # self.update()
+
+    @property
+    def x(self):
+        return self.__coords[0]
+
+    @property
+    def y(self):
+        return self.__coords[1]
 
     @property
     def width(self):
-        raise NotImplementedError # TODO
-
-    @width.setter
-    def width(self, value):
-        raise NotImplementedError
+        return self.__coords[2] - self.__coords[0]
 
     @property
     def height(self):
-        raise NotImplementedError
+        return self.__coords[3] - self.__coords[1]
+
+    @x.setter
+    def x(self, value):
+        width = self.width
+        self.__coords[0] = value
+        self.__coords[2] = value + width
+        self.update()
+
+    @y.setter
+    def y(self, value):
+        height = self.height
+        self.__coords[1] = value
+        self.__coords[3] = value + height
+        self.update()
+
+    @width.setter
+    def width(self, value):
+        self.__coords[2] = self.__coords[0] + value
+        self.update()
 
     @height.setter
     def height(self, value):
-        raise NotImplementedError
+        self.__coords[3] = self.__coords[1] + value
+        self.update()
