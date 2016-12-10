@@ -1,7 +1,23 @@
 import widgets
+import ios
+
+DEFAULT_FORM_WIDGETS = {
+    'button': widgets.Button,
+    'check': ios.IOSCheckbox,
+    'float': widgets.Entry,
+    'int': widgets.Entry,
+    'password': widgets.Entry,
+    'string': widgets.Entry,
+    'color': widgets.ColorChooser
+}
 
 class FormFrame(widgets.Frame):
-    def __init__(self, master, formstring, input_width=40, initial_values=None, title=''):
+    def __init__(self, master, formstring,
+                input_width=40,
+                initial_values=None,
+                title='',
+                inputswidgets=DEFAULT_FORM_WIDGETS):
+        self.__inputswidgets = inputswidgets
         self.__title = title
         self.__formstring = formstring
         self.initial_values = initial_values
@@ -33,9 +49,9 @@ class FormFrame(widgets.Frame):
         for i in self.__inputs:
             if type(i) == widgets.Entry:
                 result.append(i.value)
-            elif type(i) == widgets.SimpleCheckbox:
+            elif type(i) == self.__inputswidgets['check']:
                 result.append(i.checked)
-            elif type(i) == widgets.ColorChooser:
+            elif type(i) == self.__inputswidgets['color']:
                 result.append(i.color)
         return result
 
@@ -74,14 +90,14 @@ class FormFrame(widgets.Frame):
                 input = None
 
                 if inputtype == 'string':
-                    input = widgets.Entry(
+                    input = self.__inputswidgets['string'](
                         fieldframe,
                         width=self.input_width / len(fields)
                     )
                     if self.initial_values:
                         input.text = self.initial_values[field_counter]
                 elif inputtype == 'int':
-                    input = widgets.Entry(
+                    input = self.__inputswidgets['int'](
                         fieldframe,
                         # many fields in line makes the sum of the widths be
                         # greater than an only fields because border
@@ -92,7 +108,7 @@ class FormFrame(widgets.Frame):
                     if self.initial_values:
                         input.text = self.initial_values[field_counter]
                 elif inputtype == 'float':
-                    input = widgets.Entry(
+                    input = self.__inputswidgets['float'](
                         fieldframe,
                         width=self.input_width / len(fields),
                         numbersonly=True,
@@ -103,17 +119,17 @@ class FormFrame(widgets.Frame):
                 elif inputtype == 'password':
                     # has not initial values for password entry
                     # if someone is given, is ignored
-                    input = Entry(
+                    input = self.__inputswidgets['password'](
                         fieldframe,
                         width=self.input_width / len(fields),
                         show='*'
                     )
                 elif inputtype == 'check':
-                    input = widgets.SimpleCheckbox(fieldframe)
+                    input = self.__inputswidgets['check'](fieldframe)
                     if self.initial_values:
                         input.checked = self.initial_values[field_counter]
                 elif inputtype == 'color':
-                    input = widgets.ColorChooser(
+                    input = self.__inputswidgets['color'](
                         fieldframe,
                         '#dadada' if not self.initial_values else self.initial_values[field_counter],
                         height=30, width=350

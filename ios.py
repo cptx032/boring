@@ -16,7 +16,7 @@ class IOSCheckbox(widgets.ExtendedCanvas):
     def __init__(self, master,
         width=50, height=30, checked=False,
         theme=DEFAULT_IOS_CHECKBUTTON_THEME,
-        circlepadding=4):
+        circlepadding=-1):
         self.__theme = theme
         self.__checked = checked
         self.__circlepadding = circlepadding
