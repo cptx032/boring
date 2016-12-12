@@ -759,7 +759,7 @@ class Entry(Tkinter.Entry, object):
     @text.setter
     def text(self, value):
         self.delete(0, 'end')
-        self.insert(0, str(value))
+        self.insert(0, unicode(value))
         self.validate()
 
 class HorizontalLine(ExtendedCanvas):
@@ -791,7 +791,7 @@ class Scrollbar(ttk.Scrollbar):
     pass
 
 
-class PopUpMenu(Tkinter.Toplevel):
+class PopUpMenu(SubWindow):
     def __init__(self, master, items, width=500):
         Tkinter.Toplevel.__init__(self, master)
         self.overrideredirect(True)

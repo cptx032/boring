@@ -47,7 +47,12 @@ DEFAULT_CLOSE_BTN_THEME = {
 
 class DrawWindow(draw.RoundedRectangleDraw):
     def __init__(self, master, x=0, y=0,
-            width=200, height=100, **kws):
+            width=200, height=20,
+            widget=None, **kws):
+
+        self.__widget = widget
+
+        # kws.update(fill=kws.get('fill', '#dbdbdb'))
 
         self.__close_btn_radius = kws.pop(
             'close_btn_radius', 10
@@ -69,7 +74,6 @@ class DrawWindow(draw.RoundedRectangleDraw):
         draw.RoundedRectangleDraw.__init__(
             self, master,
             [x, y, x+width, y+height],
-            fill='#dbdbdb',
             **kws
         )
 
@@ -84,7 +88,7 @@ class DrawWindow(draw.RoundedRectangleDraw):
             self.y+self.__close_btn_padding,
             self.__close_btn_radius,
             self.__close_btn_radius,
-            **DEFAULT_CLOSE_BTN_THEME
+            **self.__close_btn_theme
         )
         if self.__close_function:
             self.__close_btn.bind('<1>', self.__close_function, '+')
@@ -96,8 +100,17 @@ class DrawWindow(draw.RoundedRectangleDraw):
             self.__close_btn_padding * 2,
             self.__title,
             anchor='center',
-            fill='#888888'
+            fill='#ddd'
         )
+
+        if self.__widget:
+            self.__widget_draw = draw.WidgetDraw(
+                self.canvas, self.x, self.y+10,
+                self.__widget, anchor='nw'
+            )
+            self.canvas.update_idletasks()
+            self.width = self.__widget.winfo_width() + 4
+            self.height = 22 + self.__widget.winfo_height()
 
     def update(self):
         draw.RoundedRectangleDraw.update(self)
@@ -109,10 +122,16 @@ class DrawWindow(draw.RoundedRectangleDraw):
         self.__title.x = self.x + self.width / 2
         self.__title.y = self.y + self.__close_btn_padding * 2
 
+        if self.__widget:
+            self.__widget_draw.x = self.x + 2
+            self.__widget_draw.y = self.y + 20
+
     def delete(self):
         draw.RoundedRectangleDraw.delete(self)
         self.__close_btn.delete()
         self.__title.delete()
+        if self.__widget:
+            self.__widget_draw.delete()
 
     def center(self):
         self.x = (self.canvas.winfo_width() / 2) - (self.width / 2)

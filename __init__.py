@@ -38,16 +38,19 @@ class GenericWindow(object):
         ypos = (sh / 2) - (wh / 2)
         self.geometry('+%d+%d' % (xpos, ypos))
 
-    def add_menu(self, _dict):
+    def add_menu(self, _list):
         '''
-        {
-            'File': [
-                {
-                    'title': 'Open Project',
-                    'command': self.__open_project
-                }
+        [
+            [
+                'File', [
+                    {
+                        'title': 'Open Project',
+                        'command': self.__open_project,
+                        'shortcut': 'Control-O'
+                    }
+                ]
             ]
-        }
+        ]
         '''
         if not hasattr(self, '__menu'):
             self.__menu = Tkinter.Menu(
@@ -55,29 +58,29 @@ class GenericWindow(object):
                 relief='flat'
             )
             self.__menus = {}
-        for k in _dict.keys():
-            self.__menus[k] = Tkinter.Menu(
+        for menu in _list:
+            self.__menus[menu[0]] = Tkinter.Menu(
                 self.__menu,
                 tearoff=0,
                 relief='flat'
             )
-            for item in _dict[k]:
-                self.__menus[k].add_command(
+            for item in menu[1]:
+                self.__menus[menu[0]].add_command(
                     label=item['title'],
                     command=item['command'],
                     underline=0, # TODO: auto
                     accelerator=item.get('shortcut', None)
                 )
                 # TODO: error
-                # if item.get('shortcut', None):
-                #     self.bind(
-                #         '<%s>' % (item['shortcut']),
-                #         lambda event: item['command'],
-                #         '+'
-                #     )
+                if item.get('shortcut', None):
+                    self.bind(
+                        '<%s>' % (item['shortcut']),
+                        item['command'],
+                        '+'
+                    )
             self.__menu.add_cascade(
-                label=k,
-                menu=self.__menus[k],
+                label=menu[0],
+                menu=self.__menus[menu[0]],
                 underline=0 # TODO: identificar a letra automaticamente
             )
         self.config(
