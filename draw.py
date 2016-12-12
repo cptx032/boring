@@ -68,6 +68,44 @@ class TextDraw(BaseCanvasDraw):
         self.coords[1] = value
         self.update()
 
+class WidgetDraw(BaseCanvasDraw):
+    def __init__(self, canvas, x, y, widget, **kws):
+        self.draw_func = canvas.create_window
+        BaseCanvasDraw.__init__(
+            self,
+            canvas,
+            [x, y],
+            window=widget,
+            **kws
+        )
+
+    @property
+    def x(self):
+        return self.coords[0]
+
+    @x.setter
+    def x(self, value):
+        self.coords[0] = value
+        self.update()
+
+    @property
+    def y(self):
+        return self.coords[1]
+
+    @y.setter
+    def y(self, value):
+        self.coords[1] = value
+        self.update()
+
+    @property
+    def widget(self):
+        return self.style['window']
+
+    @widget.setter
+    def widget(self, value):
+        self.style['window'] = value
+        self.update()
+
 class ImageDraw(BaseCanvasDraw):
     def __init__(self, canvas, x, y, image, **kws):
         '''

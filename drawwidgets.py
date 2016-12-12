@@ -118,3 +118,17 @@ class DrawWindow(draw.RoundedRectangleDraw):
         self.x = (self.canvas.winfo_width() / 2) - (self.width / 2)
         self.y = (self.canvas.winfo_height() / 2) - (self.height / 2)
         self.update()
+
+    @property
+    def title(self):
+        return self.__title.text
+
+    @title.setter
+    def title(self, value):
+        self.__title.text = value
+
+    def contract(self):
+        pass
+
+    def expand(self):
+        pass

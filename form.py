@@ -16,10 +16,12 @@ class FormFrame(widgets.Frame):
                 input_width=40,
                 initial_values=None,
                 title='',
-                inputswidgets=DEFAULT_FORM_WIDGETS):
+                inputswidgets=DEFAULT_FORM_WIDGETS,
+                font=('TkDefaultFont', 10)):
         self.__inputswidgets = inputswidgets
         self.__title = title
         self.__formstring = formstring
+        self.__font = font
         self.initial_values = initial_values
         self.__frames = []
         self.__inputs = []
@@ -84,15 +86,22 @@ class FormFrame(widgets.Frame):
                 fieldframe = widgets.Frame(frame)
                 fieldframe.grid(row=0, column=column, padx=0)
 
-                label = widgets.Label(fieldframe, text=textlabel)
-                label.grid(pady=1, padx=1, row=0, column=0, sticky='w')
+                label = widgets.Label(
+                    fieldframe, text=textlabel,
+                    font=self.__font
+                )
+                label.grid(
+                    pady=1, padx=1, row=0,
+                    column=0, sticky='w'
+                )
 
                 input = None
 
                 if inputtype == 'string':
                     input = self.__inputswidgets['string'](
                         fieldframe,
-                        width=self.input_width / len(fields)
+                        width=self.input_width / len(fields),
+                        font=self.__font
                     )
                     if self.initial_values:
                         input.text = self.initial_values[field_counter]
@@ -103,7 +112,8 @@ class FormFrame(widgets.Frame):
                         # greater than an only fields because border
                         width=(self.input_width / len(fields)) if len(fields) == 1 else (self.input_width / len(fields) - 2),
                         numbersonly=True,
-                        integersonly=True
+                        integersonly=True,
+                        font=self.__font
                     )
                     if self.initial_values:
                         input.text = self.initial_values[field_counter]
@@ -112,7 +122,8 @@ class FormFrame(widgets.Frame):
                         fieldframe,
                         width=self.input_width / len(fields),
                         numbersonly=True,
-                        integersonly=False
+                        integersonly=False,
+                        font=self.__font
                     )
                     if self.initial_values:
                         input.text = self.initial_values[field_counter]
@@ -122,7 +133,8 @@ class FormFrame(widgets.Frame):
                     input = self.__inputswidgets['password'](
                         fieldframe,
                         width=self.input_width / len(fields),
-                        show='*'
+                        show='*',
+                        font=self.__font
                     )
                 elif inputtype == 'check':
                     input = self.__inputswidgets['check'](fieldframe)
