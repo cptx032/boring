@@ -56,10 +56,15 @@ class DrawWindow(draw.RoundedRectangleDraw):
             'close_btn_padding', 5
         )
         self.__close_btn_theme = kws.pop(
-            'close_btn_theme', DEFAULT_CLOSE_BTN_THEME
+            'close_btn_theme',
+            DEFAULT_CLOSE_BTN_THEME
         )
         self.__title = kws.pop(
             'title', ''
+        )
+        self.__close_function = kws.pop(
+            'close_function',
+            None
         )
         draw.RoundedRectangleDraw.__init__(
             self, master,
@@ -70,7 +75,7 @@ class DrawWindow(draw.RoundedRectangleDraw):
 
         drag.draggable(
             self,
-            update=self.__update_close_btn
+            update=lambda event: self.update()
         )
 
         self.__close_btn = draw.OvalDraw(
@@ -81,6 +86,9 @@ class DrawWindow(draw.RoundedRectangleDraw):
             self.__close_btn_radius,
             **DEFAULT_CLOSE_BTN_THEME
         )
+        if self.__close_function:
+            self.__close_btn.bind('<1>', self.__close_function, '+')
+        self.__close_btn.bind('<1>', lambda event: self.delete(), '+')
 
         self.__title = draw.TextDraw(
             master,
@@ -91,7 +99,8 @@ class DrawWindow(draw.RoundedRectangleDraw):
             fill='#888888'
         )
 
-    def __update_close_btn(self, event):
+    def update(self):
+        draw.RoundedRectangleDraw.update(self)
         self.__close_btn.x = self.x+self.__close_btn_padding
         self.__close_btn.y = self.y+self.__close_btn_padding
         self.__close_btn.width = self.__close_btn_radius
@@ -99,3 +108,13 @@ class DrawWindow(draw.RoundedRectangleDraw):
 
         self.__title.x = self.x + self.width / 2
         self.__title.y = self.y + self.__close_btn_padding * 2
+
+    def delete(self):
+        draw.RoundedRectangleDraw.delete(self)
+        self.__close_btn.delete()
+        self.__title.delete()
+
+    def center(self):
+        self.x = (self.canvas.winfo_width() / 2) - (self.width / 2)
+        self.y = (self.canvas.winfo_height() / 2) - (self.height / 2)
+        self.update()

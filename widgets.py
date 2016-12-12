@@ -814,7 +814,7 @@ class PopUpMenu(Tkinter.Toplevel):
                 icon=i.get('icon', None),
                 command=i.get('command', None))
 
-        center(self)
+        self.center()
 
     def add_command(self, title, subtitle=None, icon=None, command=None):
         '''

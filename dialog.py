@@ -1,7 +1,7 @@
 from . import *
 import widgets
 
-class DefaultDialog(Tkinter.Toplevel):
+class DefaultDialog(SubWindow):
     '''
     Class to open dialogs.
     This class is intended as a base class for custom dialogs
@@ -13,7 +13,7 @@ class DefaultDialog(Tkinter.Toplevel):
             parent -- a parent window (the application window)
             title -- the dialog title
         '''
-        Tkinter.Toplevel.__init__(self, parent)
+        SubWindow.__init__(self, parent)
         self['bg'] = parent['bg']
 
         self.withdraw()
@@ -28,12 +28,13 @@ class DefaultDialog(Tkinter.Toplevel):
             self.title(title)
 
         self.parent = parent
+        self.resizable(0, 0)
 
         self.result = None
 
         body = widgets.Frame(self)
         self.initial_focus = self.body(body)
-        body.pack(padx=5, pady=5)
+        body.pack(padx=5, pady=5, expand='yes', fill='both')
 
         self.buttonbox()
 
@@ -42,8 +43,7 @@ class DefaultDialog(Tkinter.Toplevel):
 
         self.protocol("WM_DELETE_WINDOW", self.cancel)
 
-        center(self)
-        self.resizable(0, 0)
+        self.center()
         self.deiconify()  # become visibile now
 
         self.initial_focus.focus_set()
@@ -55,7 +55,7 @@ class DefaultDialog(Tkinter.Toplevel):
 
     def destroy(self):
         self.initial_focus = None
-        Tkinter.Toplevel.destroy(self)
+        SubWindow.destroy(self)
 
     def body(self, master):
         '''
