@@ -36,6 +36,37 @@ class BaseCanvasDraw(object):
         self.delete()
         self.__index = self.draw()
 
+class LineDraw(BaseCanvasDraw):
+    def __init__(self, canvas, x1, y1, x2, y2, **kws):
+        self.draw_func = canvas.create_line
+        BaseCanvasDraw.__init__(
+            self,
+            canvas, [x1, y1, x2, y2],
+            **kws
+        )
+
+    @property
+    def p1(self):
+        return self.coords[:2]
+
+    @p1.setter
+    def p1(self, value):
+        self.coords[0] = value[0]
+        self.coords[1] = value[1]
+        self.update()
+
+    @property
+    def p2(self):
+        return self.coords[2:]
+
+    @p2.setter
+    def p2(self, value):
+        self.coords[2] = value[0]
+        self.coords[3] = value[1]
+
+class SimpleCurveDraw(BaseCanvasDraw):
+    pass # TODO
+
 class TextDraw(BaseCanvasDraw):
     def __init__(self, canvas, x, y, text, **kws):
         self.draw_func = canvas.create_text
@@ -202,6 +233,15 @@ class RectangleDraw(BaseCanvasDraw):
         self.coords = [self.x, self.y, self.x + self.width, self.y + value]
         self.update()
 
+    def is_inside(self, x, y):
+        '''
+        returns true if a point(x, y)
+        is inside oval
+        '''
+        in_x = (x >= self.x) and (x <= (self.x + self.width))
+        in_y = (y >= self.y) and (y <= (self.y  +self.height))
+        return in_x and in_y
+
 
 class OvalDraw(RectangleDraw):
     def __init__(self, canvas, x, y, width, height, **kws):
@@ -223,7 +263,19 @@ class OvalDraw(RectangleDraw):
     # TODO: implements to set the center
     @property
     def center_x(self):
-        raise NotImplementedError
+        return self.x + (self.width/2)
+
+    @property
+    def center_y(self):
+        return self.y + (self.height / 2)
+
+    # def is_inside(self, x, y):
+    #     '''
+    #     returns true if a point(x, y)
+    #     is inside oval
+    #     '''
+    #     # rectangle mode: TODO: radius mode
+    #     return NotImplementedError
 
 
 class PolygonDraw(BaseCanvasDraw):

@@ -89,7 +89,7 @@ def drag_control(item, radius=5, kmapobject=None):
     item.bounds = RectangleDraw(item.canvas,
         item.x, item.y, item.width, item.height,
         fill='', outline=DRAG_CONTROL_STYLE['fill'])
-    item.bounds.style['width'] = 2
+    item.bounds.style['width'] = 1
     item.bounds.update()
     item.lower_right = OvalDraw(item.canvas,
         item.x+item.width-radius, item.y+item.height-radius, radius*2,
