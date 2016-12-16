@@ -5,6 +5,12 @@ import ttk
 import math
 import string
 import draw
+import dialog
+
+class Frame(Tkinter.Frame, object):
+    def __init__(self, *args, **kwargs):
+        Tkinter.Frame.__init__(self, *args, **kwargs)
+        self['bg'] = self.master['bg']
 
 class ExtendedCanvas(Tkinter.Canvas, object):
     def __init__(self, *args, **kwargs):
@@ -145,7 +151,12 @@ class ExtendedListboxItem(object):
     '''
     before_click: function called before the click selection
     '''
-    def __init__(self, canvas, title, subtitle, icon, height, yoffset, before_click):
+    def __init__(self, canvas, title, subtitle, icon,
+            height, yoffset, before_click):
+        '''
+        use_arrows: if arrow up and down will change the
+        selected item
+        '''
         self.canvas = canvas
         self.__before_click = before_click
         self.__selected = False
@@ -166,6 +177,10 @@ class ExtendedListboxItem(object):
         if self.__before_click:
             self.__before_click()
         self.selected = True
+
+    @property
+    def before_click(self):
+        return self.__before_click
 
     def bind(self, *args, **kws):
         self.__rec_bg.bind(*args, **kws)
@@ -241,15 +256,40 @@ class ExtendedListbox(ExtendedCanvas):
         self.item_height = kws.pop('item_height', 40)
         ExtendedCanvas.__init__(self, *args, **kws)
 
-    def add_item(self, title, subtitle=None, icon=None):
+        if kws.pop('use_arrows', True):
+            self.bind('<Up>', lambda evt: self.up_selection(), '+')
+            self.bind('<Down>', lambda evt: self.down_selection(), '+')
+
+    def up_selection(self):
+        if len(self.__items) > 1 and self.get_selected_index() > 0:
+            self.select_by_index(self.get_selected_index() - 1)
+
+    def down_selection(self):
+        if len(self.__items) > 0 and self.get_selected_index() < (len(self.__items)-1):
+            self.select_by_index(self.get_selected_index() + 1)
+
+    def add_item(self, title, subtitle=None, icon=None, before_click=None):
         if self.unique_titles and self.get_item_by_title(title):
             raise DuplicatedExtendedListboxItemException()
         item = ExtendedListboxItem(self, title, subtitle, icon,
             self.item_height, self.item_height * len(self.__items),
-            self.desselect_all)
+            before_click=self.__item_click_handler(before_click))
         self.__items.append(item)
-        self['scrollregion'] = (0, 0, self.width, self.item_height * len(self.__items))
+        self.__update_scroll_region()
         return item
+
+    def __update_scroll_region(self):
+        self['scrollregion'] = (0, 0, self.width, self.item_height * len(self.__items))
+
+    def __item_click_handler(self, function):
+        '''
+        returns a function that returns a function
+        '''
+        def __final_function(*args):
+            self.desselect_all()
+            if function:
+                function(*args)
+        return __final_function
 
     def get_all(self):
         return self.__items
@@ -280,6 +320,15 @@ class ExtendedListbox(ExtendedCanvas):
                 return i
         return None
 
+    def get_selected_index(self):
+        '''
+        returns the index of item inside
+        the list of items
+        '''
+        for i in range(len(self.__items)):
+            if self.__items[i].selected:
+                return i
+
     def select_last(self):
         if len(self.__items) > 0:
             self.__items[-1].selected = True
@@ -287,6 +336,11 @@ class ExtendedListbox(ExtendedCanvas):
     def select_first(self):
         if len(self.__items) > 0:
             self.__items[0].selected = True
+
+    def select_by_index(self, index):
+        if index >= 0 and index <= (len(self.__items) - 1):
+            self.desselect_all()
+            self.__items[index].selected = True
 
     def desselect_all(self):
         for i in self.__items:
@@ -307,9 +361,95 @@ class ExtendedListbox(ExtendedCanvas):
                 self.item_height, self.item_height * len(self.__items),
                 self.desselect_all)
             self.__items.append(item)
+        self.__update_scroll_region()
+
+class ScrollableExtendedListbox(Frame):
+    def __init__(self, master, *args, **kws):
+        '''
+        side: the side of scroll
+        '''
+        Frame.__init__(self, master)
+        side = kws.pop('side', 'right')
+        self.__extended_listbox = ExtendedListbox(self, *args, **kws)
+        self.__scroll = Scrollbar(self, orient='vertical')
+
+        self.__scroll.pack(
+            side=side,
+            fill='y',
+            expand='yes'
+        )
+        self.__extended_listbox.pack(
+            expand='yes',
+            fill='both'
+        )
+        self.__scroll.config(
+            command=self.__extended_listbox.yview
+        )
+        self.__extended_listbox.config(
+            yscrollcommand=self.__scroll.set
+        )
+
+    # ALIAS
+    def select_by_index(self, *args, **kws):
+        return self.__extended_listbox.select_by_index(*args, **kws)
+
+    # ALIAS
+    def get_selected_index(self, *args, **kws):
+        return self.__extended_listbox.get_selected_index(*args, **kws)
+
+    # ALIAS
+    def up_selection(self, *args, **kws):
+        return self.__extended_listbox.up_selection(*args, **kws)
+
+    # ALIAS
+    def down_selection(self, *args, **kws):
+        return self.__extended_listbox.down_selection(*args, **kws)
+
+    # ALIAS
+    def add_item(self, *args, **kws):
+        return self.__extended_listbox.add_item(*args, **kws)
+
+    # ALIAS
+    def get_all(self, *args, **kws):
+        return self.__extended_listbox.get_all(*args, **kws)
+
+    # ALIAS
+    def redraw(self, *args, **kws):
+        return self.__extended_listbox.redraw(*args, **kws)
+
+    # ALIAS
+    def desselect_all(self, *args, **kws):
+        return self.__extended_listbox.desselect_all(*args, **kws)
+
+    # ALIAS
+    def remove_by_index(self, *args, **kws):
+        return self.__extended_listbox.remove_by_index(*args, **kws)
+
+    # ALIAS
+    def get_selected(self, *args, **kws):
+        return self.__extended_listbox.get_selected(*args, **kws)
+
+    # ALIAS
+    def select_last(self, *args, **kws):
+        return self.__extended_listbox.select_last(*args, **kws)
+
+    def select_first(self, *args, **kws):
+        return self.__extended_listbox.select_first(*args, **kws)
+
+    # ALIAS
+    def get_item_by_title(self, *args, **kws):
+        return self.__extended_listbox.get_item_by_title(*args, **kws)
+
+    # ALIAS
+    def remove_by_title(self, *args, **kws):
+        return self.__extended_listbox.remove_by_title(*args, **kws)
+
+    # ALIAS
+    def delete_all(self, *args, **kws):
+        return self.__extended_listbox.delete_all(*args, **kws)
 
 
-class ColorChooser(ExtendedCanvas, object): # TODO: inherits from object again?
+class ColorChooser(ExtendedCanvas):
     '''
     To get/set the color use 'color' property
     '''
@@ -512,10 +652,6 @@ class MarkDownLabel(Text):
     def insert_character(self, character, state):
         self.insert('end', character, (state,))
 
-class Frame(Tkinter.Frame, object):
-    def __init__(self, *args, **kwargs):
-        Tkinter.Frame.__init__(self, *args, **kwargs)
-        self['bg'] = self.master['bg']
 
 class LabeledSimpleCheckbox(Frame):
     '''
@@ -793,7 +929,7 @@ class Scrollbar(ttk.Scrollbar):
 
 class PopUpMenu(SubWindow):
     def __init__(self, master, items, width=500):
-        Tkinter.Toplevel.__init__(self, master)
+        SubWindow.__init__(self, master)
         self.overrideredirect(True)
         self.canvas = ExtendedListbox(self)
         self['width'] = width # TODO fixme

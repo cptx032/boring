@@ -6,7 +6,7 @@ class DefaultDialog(SubWindow):
     Class to open dialogs.
     This class is intended as a base class for custom dialogs
     '''
-    def __init__(self, parent, title=None):
+    def __init__(self, parent, title=None, show_in_start=True):
         '''
         Initialize a dialog.
         Arguments:
@@ -48,10 +48,10 @@ class DefaultDialog(SubWindow):
 
         self.initial_focus.focus_set()
 
-        # wait for window to appear on screen before calling grab_set
-        self.wait_visibility()
-        self.grab_set()
-        self.wait_window(self)
+        if show_in_start:
+            self.show()
+        else:
+            self.withdraw()
 
     def destroy(self):
         self.initial_focus = None
@@ -65,6 +65,12 @@ class DefaultDialog(SubWindow):
         by the __init__ method.
         '''
         pass
+
+    def show(self):
+        # wait for window to appear on screen before calling grab_set
+        self.wait_visibility()
+        self.grab_set()
+        self.wait_window(self)
 
     def buttonbox(self):
         '''
