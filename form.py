@@ -50,14 +50,7 @@ class FormFrame(widgets.Frame):
         '''
         result = []
         for i in self.__inputs:
-            if type(i) == widgets.Entry:
-                result.append(i.value)
-            elif type(i) == self.__inputswidgets['text']:
-                result.append(i.text)
-            elif type(i) == self.__inputswidgets['check']:
-                result.append(i.checked)
-            elif type(i) == self.__inputswidgets['color']:
-                result.append(i.color)
+            result.append(i.value)
         return result
 
     def build_form(self):
@@ -156,7 +149,7 @@ class FormFrame(widgets.Frame):
                         font=self.__font
                     )
                 else:
-                    raise Exception('InvalidFormStringError')
+                    _input = self.__inputswidgets[inputtype](fieldframe)
                 _input.grid(pady=1, padx=0, row=1, column=0, sticky='w')
 
                 self.__inputs.append(_input)

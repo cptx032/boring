@@ -109,6 +109,15 @@ class TextDraw(BaseCanvasDraw):
         self.coords[1] = value
         self.update()
 
+    @property
+    def fill(self):
+        return self.style['fill']
+
+    @fill.setter
+    def fill(self, value):
+        self.style['fill'] = value
+        self.update()
+
 class WidgetDraw(BaseCanvasDraw):
     def __init__(self, canvas, x, y, widget, **kws):
         self.draw_func = canvas.create_window

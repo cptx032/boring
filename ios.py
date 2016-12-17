@@ -101,3 +101,7 @@ class IOSCheckbox(widgets.ExtendedCanvas):
 
     def __get_circle_height(self):
         return self.height-(self.__circlepadding*2)
+
+    @property
+    def value(self):
+        return self.checked

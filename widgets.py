@@ -19,7 +19,7 @@ class ExtendedCanvas(Tkinter.Canvas, object):
             using the mouse
         '''
         self.__items = []
-        self.draggable = kwargs.pop('draggable', True) # TODO: to false
+        self.draggable = kwargs.pop('draggable', False)
         Tkinter.Canvas.__init__(self, *args, **kwargs)
         self.bind('<B3-Motion>', self.__drag_items, '+')
         self.bind('<ButtonRelease-3>', self.__clear_last_drag_point, '+')
@@ -194,6 +194,10 @@ class SimpleCheckbox(ExtendedCanvas):
         called when you click in 
         '''
         self.checked = not self.checked
+
+    @property
+    def value(self):
+        return self.checked
 
 
 ## LISTBOX
@@ -533,6 +537,10 @@ class ColorChooser(ExtendedCanvas):
         self.delete(self.__color_index)
         self.__color_index = self.__gen_index(self.color)
 
+    @property
+    def value(self):
+        return self.color
+
 class Button(ExtendedCanvas):
     def __init__(self, *args, **kwargs):
         _wi, _he = kwargs.pop('width', 100), kwargs.pop('height', 25)
@@ -540,20 +548,27 @@ class Button(ExtendedCanvas):
         self.level = 1
         self.__bg_color = BG_COLOR
         self.__bd_color = '#aaa'
-        self.__fg_color = 'black'
+        _fg_color = kwargs.pop('fgcolor', 'black')
 
         self.default = kwargs.pop('default', '')
-        self.text = kwargs.pop('text', '')
+        _text = kwargs.pop('text', '')
         self.command = kwargs.pop('command', None)
 
         if self.default == 'active':
             self.__bd_color = '#00aacc'
 
         kwargs.update(width=_wi, height=_he, bg=BG_COLOR)
-        Tkinter.Canvas.__init__(self, *args, **kwargs)
+        ExtendedCanvas.__init__(self, *args, **kwargs)
         self.update_idletasks()
         self.__bg_index = self.__create_bg_index()
-        self.__text_index = self.__create_text_index()
+
+        self.__text = draw.TextDraw(
+            self,
+            self.width / 2,
+            self.height / 2,
+            _text,
+            fill=_fg_color
+        )
 
         self.__bind_command(self.command)
 
@@ -565,16 +580,26 @@ class Button(ExtendedCanvas):
         return self.create_rounded_rectangle([0,0,self.width,self.height],
             self.radius, fill=self.__bg_color, outline=self.__bd_color)
 
-    def __create_text_index(self):
-        return self.create_text(self.width / 2,
-            self.height / 2,
-            fill=self.__fg_color,
-            text=self.text)
-
     def __bind_command(self, cmd):
         if not cmd:
             return
         self.bind('<1>', lambda *args : cmd(), '+')
+
+    @property
+    def text(self):
+        return self.__text.text
+
+    @text.setter
+    def text(self, value):
+        self.__text.text = value
+
+    @property
+    def fgcolor(self):
+        return self.__text.style['fill']
+
+    @fgcolor.setter
+    def fgcolor(self, value):
+        self.__text.fill = value
 
 class Label(Tkinter.Label, object):
     def __init__(self, *args, **kwargs):
@@ -623,6 +648,10 @@ class Text(Tkinter.Text, object):
     def text(self, value):
         self.delete(0.0, 'end')
         self.insert(0.0, unicode(value))
+
+    @property
+    def value(self):
+        return self.text
 
 class MarkDownLabel(Text):
     def __init__(self, master, text='', **kws):
