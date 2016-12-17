@@ -602,11 +602,27 @@ class Label(Tkinter.Label, object):
 
 class Text(Tkinter.Text, object):
     def __init__(self, *args, **kws):
+        kws.update(
+            relief='flat',
+            border=10,
+            insertwidth=1,
+            highlightcolor='#aaa',
+            highlightthickness=1
+        )
         Tkinter.Text.__init__(self, *args, **kws)
 
     def centralize_text(self):
         self.tag_configure('center', justify='center')
         self.tag_add('center', 1.0, 'end')
+
+    @property
+    def text(self):
+        return self.get(0.0, 'end')
+
+    @text.setter
+    def text(self, value):
+        self.delete(0.0, 'end')
+        self.insert(0.0, unicode(value))
 
 class MarkDownLabel(Text):
     def __init__(self, master, text='', **kws):

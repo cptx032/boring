@@ -8,7 +8,8 @@ DEFAULT_FORM_WIDGETS = {
     'int': widgets.Entry,
     'password': widgets.Entry,
     'string': widgets.Entry,
-    'color': widgets.ColorChooser
+    'color': widgets.ColorChooser,
+    'text': widgets.Text
 }
 
 class FormFrame(widgets.Frame):
@@ -51,6 +52,8 @@ class FormFrame(widgets.Frame):
         for i in self.__inputs:
             if type(i) == widgets.Entry:
                 result.append(i.value)
+            elif type(i) == self.__inputswidgets['text']:
+                result.append(i.text)
             elif type(i) == self.__inputswidgets['check']:
                 result.append(i.checked)
             elif type(i) == self.__inputswidgets['color']:
@@ -95,18 +98,18 @@ class FormFrame(widgets.Frame):
                     column=0, sticky='w'
                 )
 
-                input = None
+                _input = None
 
                 if inputtype == 'string':
-                    input = self.__inputswidgets['string'](
+                    _input = self.__inputswidgets['string'](
                         fieldframe,
                         width=self.input_width / len(fields),
                         font=self.__font
                     )
                     if self.initial_values:
-                        input.text = self.initial_values[field_counter]
+                        _input.text = self.initial_values[field_counter]
                 elif inputtype == 'int':
-                    input = self.__inputswidgets['int'](
+                    _input = self.__inputswidgets['int'](
                         fieldframe,
                         # many fields in line makes the sum of the widths be
                         # greater than an only fields because border
@@ -116,9 +119,9 @@ class FormFrame(widgets.Frame):
                         font=self.__font
                     )
                     if self.initial_values:
-                        input.text = self.initial_values[field_counter]
+                        _input.text = self.initial_values[field_counter]
                 elif inputtype == 'float':
-                    input = self.__inputswidgets['float'](
+                    _input = self.__inputswidgets['float'](
                         fieldframe,
                         width=self.input_width / len(fields),
                         numbersonly=True,
@@ -126,31 +129,37 @@ class FormFrame(widgets.Frame):
                         font=self.__font
                     )
                     if self.initial_values:
-                        input.text = self.initial_values[field_counter]
+                        _input.text = self.initial_values[field_counter]
                 elif inputtype == 'password':
                     # has not initial values for password entry
                     # if someone is given, is ignored
-                    input = self.__inputswidgets['password'](
+                    _input = self.__inputswidgets['password'](
                         fieldframe,
                         width=self.input_width / len(fields),
                         show='*',
                         font=self.__font
                     )
                 elif inputtype == 'check':
-                    input = self.__inputswidgets['check'](fieldframe)
+                    _input = self.__inputswidgets['check'](fieldframe)
                     if self.initial_values:
-                        input.checked = self.initial_values[field_counter]
+                        _input.checked = self.initial_values[field_counter]
                 elif inputtype == 'color':
-                    input = self.__inputswidgets['color'](
+                    _input = self.__inputswidgets['color'](
                         fieldframe,
                         '#dadada' if not self.initial_values else self.initial_values[field_counter],
                         height=30, width=350
                     )
+                elif inputtype == 'text':
+                    _input = self.__inputswidgets['text'](
+                        fieldframe,
+                        width=self.input_width / len(fields),
+                        font=self.__font
+                    )
                 else:
                     raise Exception('InvalidFormStringError')
-                input.grid(pady=1, padx=0, row=1, column=0, sticky='w')
+                _input.grid(pady=1, padx=0, row=1, column=0, sticky='w')
 
-                self.__inputs.append(input)
+                self.__inputs.append(_input)
 
                 column += 1
                 field_counter += 1
