@@ -14,7 +14,57 @@ class Frame(Tkinter.Frame, object):
 
 class ExtendedCanvas(Tkinter.Canvas, object):
     def __init__(self, *args, **kwargs):
+        '''
+        draggable: if true can drag entire scene
+            using the mouse
+        '''
+        self.__items = []
+        self.draggable = kwargs.pop('draggable', True) # TODO: to false
         Tkinter.Canvas.__init__(self, *args, **kwargs)
+        self.bind('<B3-Motion>', self.__drag_items, '+')
+        self.bind('<ButtonRelease-3>', self.__clear_last_drag_point, '+')
+
+        self.__last_drag_point = None
+        # scroll coords stores the actual scroll
+        # to restore the initial position before
+        # the scrolling
+        self.__scroll_coords = [0, 0]
+
+    def __store_scroll(self, x, y):
+        '''
+        saves the scroll to restore the initial position
+        '''
+        self.__scroll_coords[0] += x
+        self.__scroll_coords[1] += y
+
+    def clear_scroll(self):
+        for i in self.__items:
+            i.scroll(
+                -self.__scroll_coords[0],
+                -self.__scroll_coords[1]
+            )
+        self.__scroll_coords = [0, 0]
+
+    def __clear_last_drag_point(self, event):
+        self.__last_drag_point = None
+
+    def add_drag_item(self, item):
+        self.__items.append(item)
+
+    def __drag_items(self, event):
+        if self.draggable:
+            if self.__last_drag_point:
+                delta = [
+                    event.x - self.__last_drag_point[0],
+                    event.y - self.__last_drag_point[1]
+                ]
+                for i in self.__items:
+                    i.scroll(
+                        delta[0],
+                        delta[1]
+                    )
+                self.__store_scroll(delta[0], delta[1])
+            self.__last_drag_point = [event.x, event.y]
 
     @property
     def center(self):
@@ -555,8 +605,8 @@ class Text(Tkinter.Text, object):
         Tkinter.Text.__init__(self, *args, **kws)
 
     def centralize_text(self):
-        self.tag_configure("center", justify='center')
-        self.tag_add("center", 1.0, "end")
+        self.tag_configure('center', justify='center')
+        self.tag_add('center', 1.0, 'end')
 
 class MarkDownLabel(Text):
     def __init__(self, master, text='', **kws):

@@ -50,7 +50,8 @@ class CommandChooserWindow(SubWindow):
                 i.get('name'),
                 before_click=self.__item_click_handler(
                     i.get('command', None)
-                )
+                ),
+                subtitle=i.get('subtitle', None)
             )
 
     def __key_handler(self, event):
@@ -103,5 +104,4 @@ class CommandChooserWindow(SubWindow):
     def hide(self):
         self.grab_release()
         self.withdraw()
-        self.master.grab_set()
         self.master.focus_force()

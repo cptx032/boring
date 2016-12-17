@@ -41,7 +41,7 @@ class DefaultDialog(SubWindow):
         if not self.initial_focus:
             self.initial_focus = self
 
-        self.protocol("WM_DELETE_WINDOW", self.cancel)
+        self.protocol('WM_DELETE_WINDOW', self.cancel)
 
         self.center()
         self.deiconify()  # become visibile now
@@ -79,13 +79,13 @@ class DefaultDialog(SubWindow):
         '''
         box = widgets.Frame(self)
 
-        w = widgets.Button(box, text="OK", command=self.ok, default='active')
+        w = widgets.Button(box, text='OK', command=self.ok, default='active')
         w.pack(side='left', padx=5, pady=5)
-        w = widgets.Button(box, text="Cancel", command=self.cancel)
+        w = widgets.Button(box, text='Cancel', command=self.cancel)
         w.pack(side='left', padx=5, pady=5)
 
-        self.bind("<Return>", self.ok)
-        self.bind("<Escape>", self.cancel)
+        self.bind('<Return>', self.ok)
+        self.bind('<Escape>', self.cancel)
 
         box.pack(side='right')
 

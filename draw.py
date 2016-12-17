@@ -9,6 +9,8 @@ class BaseCanvasDraw(object):
         # override this to Canvas.create_something
         # self.draw_func = None
         self.__index = self.draw()
+        if hasattr(canvas, 'add_drag_item'):
+            canvas.add_drag_item(self)
 
     def draw(self):
         return self.draw_func(*self.coords, **self.style)
@@ -28,6 +30,14 @@ class BaseCanvasDraw(object):
 
     def down(self):
         self.canvas.tag_lower(self.__index)
+
+    def scroll(self, x, y):
+        '''
+        increments decrements the components
+        '''
+        for i in range(0, len(self.coords), 2):
+            self.coords[i] += x
+            self.coords[i+1] += y
 
     def reset(self):
         '''
@@ -288,6 +298,11 @@ class RoundedRectangleDraw(PolygonDraw):
         self.__coords = coords
         self.radius = radius
         PolygonDraw.__init__(self, canvas, self.__coords, **kws)
+
+    # override
+    def scroll(self, x, y):
+        self.x += x
+        self.y += y
 
     def get_circle_point(self, cx, cy, radius, angle):
         '''
