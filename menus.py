@@ -5,7 +5,7 @@ from . import *
 class CommandChooserWindow(SubWindow):
     def __init__(self, master,
             width=800, height=300,
-            items=[], search_words=True,
+            items=[], search_words=False,
             verify_case=False):
         self.__width = int(width)
         self.__height = int(height)
@@ -57,20 +57,23 @@ class CommandChooserWindow(SubWindow):
         if event.keysym in ('Up', 'Down', 'Return', 'Escape'):
             return
         final_items = []
-        if self.search_words:
-            entry_text = self.entry.text
+        entry_text = self.entry.text
+        if not self.verify_case:
+            entry_text = entry_text.lower()
+        words = set(entry_text.split(' '))
+
+        for menu in self.__items:
+            menu_title = menu.get('name')
             if not self.verify_case:
-                entry_text = entry_text.lower()
-            words = set(entry_text.split(' '))
-            for menu in self.__items:
-                menu_title = menu.get('name')
-                if not self.verify_case:
-                    menu_title = menu_title.lower()
+                menu_title = menu_title.lower()
+
+            if self.search_words:
                 menu_words = set(menu_title.split(' '))
                 if words.issubset(menu_words):
                     final_items.append(menu)
-        else:
-            pass
+            else:
+                if entry_text in menu_title:
+                    final_items.append(menu)
 
         self.commands.delete_all()
         self.__add_items(final_items)
@@ -98,5 +101,7 @@ class CommandChooserWindow(SubWindow):
         self.entry.focus_force()
 
     def hide(self):
-        self.withdraw()
         self.grab_release()
+        self.withdraw()
+        self.master.grab_set()
+        self.master.focus_force()
