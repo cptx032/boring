@@ -383,18 +383,26 @@ class ExtendedListbox(ExtendedCanvas):
             if self.__items[i].selected:
                 return i
 
+    def select_item(self, item):
+        item.selected = True
+        # finding the index
+        for i in range(len(self.__items)):
+            if self.__items[i] == item:
+                self.yview('moveto', float(i) / len(self.__items))
+                break
+
     def select_last(self):
         if len(self.__items) > 0:
-            self.__items[-1].selected = True
+            self.select_item(self.__items[-1])
 
     def select_first(self):
         if len(self.__items) > 0:
-            self.__items[0].selected = True
+            self.select_item(self.__items[0])
 
     def select_by_index(self, index):
         if index >= 0 and index <= (len(self.__items) - 1):
             self.desselect_all()
-            self.__items[index].selected = True
+            self.select_item(self.__items[index])
 
     def desselect_all(self):
         for i in self.__items:
