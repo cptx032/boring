@@ -44,6 +44,12 @@ class CommandChooserWindow(SubWindow):
         self.entry.bind('<Down>', lambda event: self.commands.down_selection(), '+')
         self.entry.bind('<Up>', lambda event: self.commands.up_selection(), '+')
 
+    def add_command(self, item):
+        self.__items.append(item)
+
+    def add_commands(self, items):
+        self.__items.extend(item)
+
     def __add_items(self, items):
         for i in items:
             self.commands.add_item(
