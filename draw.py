@@ -46,6 +46,10 @@ class BaseCanvasDraw(object):
         self.delete()
         self.__index = self.draw()
 
+    def configure(self, **kws):
+        self.style.update(**kws)
+        self.update()
+
 class LineDraw(BaseCanvasDraw):
     def __init__(self, canvas, x1, y1, x2, y2, **kws):
         self.draw_func = canvas.create_line
@@ -88,8 +92,7 @@ class TextDraw(BaseCanvasDraw):
 
     @text.setter
     def text(self, value):
-        self.style['text'] = unicode(value)
-        self.update()
+        self.configure(text=unicode(value))
 
     @property
     def x(self):
@@ -115,8 +118,15 @@ class TextDraw(BaseCanvasDraw):
 
     @fill.setter
     def fill(self, value):
-        self.style['fill'] = value
-        self.update()
+        self.configure(fill=value)
+
+    @property
+    def font(self):
+        return self.style['font']
+
+    @font.setter
+    def font(self, value):
+        self.configure(font=value)
 
 class WidgetDraw(BaseCanvasDraw):
     def __init__(self, canvas, x, y, widget, **kws):
@@ -153,8 +163,7 @@ class WidgetDraw(BaseCanvasDraw):
 
     @widget.setter
     def widget(self, value):
-        self.style['window'] = value
-        self.update()
+        self.configure(window=value)
 
 class ImageDraw(BaseCanvasDraw):
     def __init__(self, canvas, x, y, image, **kws):
@@ -172,8 +181,7 @@ class ImageDraw(BaseCanvasDraw):
 
     @image.setter
     def image(self, value):
-        self.style['image'] = value
-        self.update()
+        self.configure(image=value)
 
     @property
     def x(self):
@@ -301,6 +309,14 @@ class PolygonDraw(BaseCanvasDraw):
     def __init__(self, canvas, coords, **kws):
         self.draw_func = canvas.create_polygon
         BaseCanvasDraw.__init__(self, canvas, coords, **kws)
+
+    @property
+    def fill(self):
+        return self.style['fill']
+
+    @fill.setter
+    def fill(self, value):
+        self.configure(fill=value)
 
 class RoundedRectangleDraw(PolygonDraw):
     def __init__(self, canvas, coords, radius=[2, 2, 2, 2], **kws):

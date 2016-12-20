@@ -552,10 +552,11 @@ class ColorChooser(ExtendedCanvas):
 class Button(ExtendedCanvas):
     def __init__(self, *args, **kwargs):
         _wi, _he = kwargs.pop('width', 100), kwargs.pop('height', 25)
-        self.radius = [2, 2, 2, 2]
+        self.radius = kwargs.pop('radius', [2, 2, 2, 2])
         self.level = 1
-        self.__bg_color = BG_COLOR
-        self.__bd_color = '#aaa'
+        self.__bg_color = kwargs.pop('bgcolor', BG_COLOR)
+        self.__bd_color = kwargs.pop('bdcolor', '#aaa')
+        self.__font = kwargs.pop('font', ('TkDefaultFont', 10))
         _fg_color = kwargs.pop('fgcolor', 'black')
 
         self.default = kwargs.pop('default', '')
@@ -568,14 +569,20 @@ class Button(ExtendedCanvas):
         kwargs.update(width=_wi, height=_he, bg=BG_COLOR)
         ExtendedCanvas.__init__(self, *args, **kwargs)
         self.update_idletasks()
-        self.__bg_index = self.__create_bg_index()
+
+        self.__bg = draw.RoundedRectangleDraw(
+            self, [0,0,self.width, self.height],
+            radius=self.radius, fill=self.__bg_color,
+            outline=self.__bd_color
+        )
 
         self.__text = draw.TextDraw(
             self,
             self.width / 2,
             self.height / 2,
             _text,
-            fill=_fg_color
+            fill=_fg_color,
+            font=self.__font
         )
 
         self.__bind_command(self.command)
@@ -583,10 +590,6 @@ class Button(ExtendedCanvas):
         self.config(bg=self.master['bg'],
             relief='flat', bd=0,
             highlightthickness=0)
-
-    def __create_bg_index(self):
-        return self.create_rounded_rectangle([0,0,self.width,self.height],
-            self.radius, fill=self.__bg_color, outline=self.__bd_color)
 
     def __bind_command(self, cmd):
         if not cmd:
@@ -608,6 +611,22 @@ class Button(ExtendedCanvas):
     @fgcolor.setter
     def fgcolor(self, value):
         self.__text.fill = value
+
+    @property
+    def bgcolor(self):
+        return self.__bg.style['fill']
+
+    @bgcolor.setter
+    def bgcolor(self, value):
+        self.__bg.fill = value
+
+    @property
+    def font(self):
+        return self.__text.font
+
+    @font.setter
+    def font(self, value):
+        self.__text.font = value
 
 class Label(Tkinter.Label, object):
     def __init__(self, *args, **kwargs):
@@ -992,7 +1011,7 @@ class Entry(Tkinter.Entry, object):
     @property
     def value(self):
         if self.numbersonly:
-            return (int if self.integersonly else float)(self.text)
+            return None if not self.text else (int if self.integersonly else float)(self.text)
         return self.text
 
     @text.setter
@@ -1000,6 +1019,47 @@ class Entry(Tkinter.Entry, object):
         self.delete(0, 'end')
         self.insert(0, unicode(value))
         self.validate()
+
+
+class PlaceHoldedEntry(ExtendedCanvas):
+    def __init__(self, master, placeholder='', **kws):
+        self.__placeholder = placeholder
+        width, height = kws.get('width', 100), kws.get('height', 30)
+        self.__placeholder_width = 150
+        ExtendedCanvas.__init__(self, master,
+            width=width, height=height,
+            bg=BG_COLOR, bd=0, highlightthickness=0
+        )
+        self.__bg = draw.RoundedRectangleDraw(
+            self, [1,1,width-2,height-1],
+            fill='#fff', outline='#aaa',
+            radius=[5,5,5,5]
+        )
+        self.__placeholder_bg = draw.RoundedRectangleDraw(
+            self, [1,1,self.__placeholder_width,height-1],
+            fill='', outline='#00aacc',
+            radius=[5,5,0,0]
+        )
+        self.__placeholder_text = draw.TextDraw(
+            self, self.__placeholder_width/2, height/2,
+            self.__placeholder, anchor='center', fill='#00aacc'
+        )
+
+        self.__frame = Frame(self, width=width-self.__placeholder_width-4-5, height=height-4)
+        # self.__frame.pack()
+        self.__frame.pack_propagate(0)
+
+        self.__entry = Entry(self.__frame)
+        self.__entry.pack(expand='yes', fill='both')
+
+        self.__widget = draw.WidgetDraw(
+            self, self.__placeholder_width+1, 2, self.__frame, anchor='nw'
+        )
+
+        self.__entry.configure(
+            bd=0, highlightthickness=0
+        )
+
 
 class HorizontalLine(ExtendedCanvas):
     def __init__(self, master, **kws):

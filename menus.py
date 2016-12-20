@@ -3,6 +3,7 @@ import widgets
 from . import *
 
 class CommandChooserWindow(SubWindow):
+    INSTANCE = None
     def __init__(self, master,
             width=800, height=300,
             items=[], search_words=False,
@@ -36,13 +37,22 @@ class CommandChooserWindow(SubWindow):
 
         self.overrideredirect(True)
 
-        self.__add_items(self.__items)
+        self.add_items(self.__items)
 
         self.entry.bind('<Escape>', lambda e: self.hide(), '+')
         self.bind('<Any-KeyRelease>', self.__key_handler, '+')
-        self.entry.bind('<Return>', self.__run_selected_command_handler ,'+')
+        self.entry.bind('<Return>', self.__run_selected_command_handler, '+')
         self.entry.bind('<Down>', lambda event: self.commands.down_selection(), '+')
         self.entry.bind('<Up>', lambda event: self.commands.up_selection(), '+')
+
+        if not CommandChooserWindow.INSTANCE:
+            CommandChooserWindow.INSTANCE = self
+
+    @staticmethod
+    def popup(items):
+        CommandChooserWindow.INSTANCE.items = items
+        CommandChooserWindow.INSTANCE.show_items(items)
+        CommandChooserWindow.INSTANCE.show()
 
     def add_command(self, item):
         self.__items.append(item)
@@ -50,14 +60,15 @@ class CommandChooserWindow(SubWindow):
     def add_commands(self, items):
         self.__items.extend(item)
 
-    def __add_items(self, items):
+    def add_items(self, items):
         for i in items:
             self.commands.add_item(
                 i.get('name'),
                 before_click=self.__item_click_handler(
                     i.get('command', None)
                 ),
-                subtitle=i.get('subtitle', None)
+                subtitle=i.get('subtitle', None),
+                icon=i.get('icon', None)
             )
 
     def __key_handler(self, event):
@@ -65,6 +76,7 @@ class CommandChooserWindow(SubWindow):
             return
         final_items = []
         entry_text = self.entry.text
+
         if not self.verify_case:
             entry_text = entry_text.lower()
         words = set(entry_text.split(' '))
@@ -82,10 +94,12 @@ class CommandChooserWindow(SubWindow):
                 if entry_text in menu_title:
                     final_items.append(menu)
 
-        self.commands.delete_all()
-        self.__add_items(final_items)
-        self.commands.select_first()
+        self.show_items(final_items)
 
+    def show_items(self, items):
+        self.commands.delete_all()
+        self.add_items(items)
+        self.commands.select_first()
 
     def __run_selected_command_handler(self, event):
         selected = self.commands.get_selected()
@@ -111,3 +125,62 @@ class CommandChooserWindow(SubWindow):
         self.grab_release()
         self.withdraw()
         self.master.focus_force()
+
+    @property
+    def items(self):
+        return self.__items
+
+    @items.setter
+    def items(self, value):
+        self.__items = value
+
+class OptionMenu(widgets.Button):
+    def __init__(self, master, options=[], initial_index=0, **kws):
+        '''
+        options = [
+            {
+                'name': 'Title',
+                'icon': 'Icon',
+                'subtitle': 'Subtitle'
+            },
+            {}, {} ...
+        ]
+        '''
+        self.__options = options
+        widgets.Button.__init__(self, master, **kws)
+
+        self.bind('<1>', self.__click, '+')
+        self.options = self.__options
+
+        self.select_by_index(initial_index)
+
+    def __click(self, event=None):
+        self.show()
+
+    def select_by_index(self, index):
+        if (index >= 0) and (index < len(self.options)):
+            self.text = self.options[index]['name']
+
+    @property
+    def options(self):
+        return self.__options
+
+    def __gen_command(self, item):
+        def __final_handler(*args):
+            self.text = item.get('name')
+        return __final_handler
+
+    @options.setter
+    def options(self, value):
+        for i in value:
+            i['command'] = self.__gen_command(i)
+        self.__options = value
+
+    def show(self, options=None):
+        if options:
+            self.options = options
+        CommandChooserWindow.popup(self.options)
+
+    @property
+    def value(self):
+        return self.text
