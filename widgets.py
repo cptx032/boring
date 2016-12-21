@@ -1,6 +1,6 @@
 # coding: utf-8
 
-from . import *
+from window import *
 import ttk
 import math
 import string

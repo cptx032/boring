@@ -1,4 +1,4 @@
-from . import *
+from window import *
 import widgets
 
 class DefaultDialog(SubWindow):
