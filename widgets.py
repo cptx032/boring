@@ -229,7 +229,7 @@ class ExtendedListboxItem(object):
 
     def __on_click(self, evt):
         if self.__before_click:
-            self.__before_click()
+            self.__before_click(self)
         self.selected = True
 
     @property

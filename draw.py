@@ -38,6 +38,7 @@ class BaseCanvasDraw(object):
         for i in range(0, len(self.coords), 2):
             self.coords[i] += x
             self.coords[i+1] += y
+        self.update()
 
     def reset(self):
         '''
