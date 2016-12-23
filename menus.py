@@ -1,6 +1,6 @@
 # menu
 import widgets
-from . import *
+from window import *
 
 class CommandChooserWindow(SubWindow):
     INSTANCE = None
@@ -184,3 +184,17 @@ class OptionMenu(widgets.Button):
     @property
     def value(self):
         return self.text
+
+if __name__ == '__main__':
+    top = Window()
+    # Just to create a instance
+    CommandChooserWindow(top).hide()
+    options = []
+    for i in range(30):
+        options.append({
+            'name': 'Option %d' % (i),
+            'subtitle': 'Options %d subtitle' % (i)
+        })
+    optionmenu = OptionMenu(top, options=options)
+    optionmenu.pack(pady=5, padx=5)
+    top.mainloop()
