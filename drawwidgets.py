@@ -109,8 +109,7 @@ class DrawWindow(draw.RoundedRectangleDraw):
                 self.__widget, anchor='nw'
             )
             self.canvas.update_idletasks()
-            self.width = self.__widget.winfo_width() + 4
-            self.height = 22 + self.__widget.winfo_height()
+            self.adjust_size_widget()
 
     def update(self):
         draw.RoundedRectangleDraw.update(self)
@@ -125,6 +124,12 @@ class DrawWindow(draw.RoundedRectangleDraw):
         if self.__widget:
             self.__widget_draw.x = self.x + 2
             self.__widget_draw.y = self.y + 20
+
+    def adjust_size_widget(self):
+        # forcar o widget a se adaptar ao tamahno da janela (e nao o contrario)
+        # self.width = self.__widget.winfo_width() + 4
+        # self.height = 22 + self.__widget.winfo_height()
+        pass
 
     def delete(self):
         draw.RoundedRectangleDraw.delete(self)
@@ -151,3 +156,7 @@ class DrawWindow(draw.RoundedRectangleDraw):
 
     def expand(self):
         pass
+
+    @property
+    def widget(self):
+        return self.__widget

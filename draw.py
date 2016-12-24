@@ -78,6 +78,7 @@ class LineDraw(BaseCanvasDraw):
     def p2(self, value):
         self.coords[2] = value[0]
         self.coords[3] = value[1]
+        self.update()
 
 class SimpleCurveDraw(BaseCanvasDraw):
     pass # TODO
