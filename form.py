@@ -172,3 +172,10 @@ class FormFrame(widgets.Frame):
     def formstring(self, value):
         self.__formstring = value
         self.build_form()
+
+if __name__ == '__main__':
+    from window import Window
+    top = Window()
+    form = FormFrame(top, 'Name@string\nAge@int\nProgrammer@check\nHair color@color')
+    form.pack()
+    top.mainloop()

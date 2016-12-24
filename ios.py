@@ -105,3 +105,10 @@ class IOSCheckbox(widgets.ExtendedCanvas):
     @property
     def value(self):
         return self.checked
+
+if __name__ == '__main__':
+    from window import Window
+    top = Window()
+    widgets.Label(top, text='IOSCheckbox').pack(pady=5, padx=5)
+    IOSCheckbox(top).pack(pady=5, padx=5)
+    top.mainloop()

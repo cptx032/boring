@@ -319,11 +319,21 @@ class PolygonDraw(BaseCanvasDraw):
     def fill(self, value):
         self.configure(fill=value)
 
+
 class RoundedRectangleDraw(PolygonDraw):
     def __init__(self, canvas, coords, radius=[2, 2, 2, 2], **kws):
         self.__coords = coords
-        self.radius = radius
+        self.__radius = radius
         PolygonDraw.__init__(self, canvas, self.__coords, **kws)
+
+    @property
+    def radius(self):
+        return self.__radius
+
+    @radius.setter
+    def radius(self, value):
+        self.__radius = value
+        self.update()
 
     # override
     def scroll(self, x, y):
@@ -432,3 +442,19 @@ class RoundedRectangleDraw(PolygonDraw):
     def height(self, value):
         self.__coords[3] = self.__coords[1] + value
         self.update()
+
+    @property
+    def fill(self):
+        return self.style['fill']
+
+    @fill.setter
+    def fill(self, value):
+        self.configure(fill=value)
+
+    @property
+    def outline(self):
+        return self.style['outline']
+
+    @outline.setter
+    def outline(self, value):
+        self.configure(outline=value)

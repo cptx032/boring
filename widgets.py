@@ -147,13 +147,17 @@ class ExtendedCanvas(Tkinter.Canvas, object):
                 pos[1]])
         return self.create_polygon(*pts, **kwargs)
 
-CHECK_MARK=unichr(10003) # TODO: receber como parametro
+# TODO: criar tema contendo o charcheck radius bg font etc
+# com as opções de checked e normal
+CHECK_MARK=unichr(10003)
 class SimpleCheckbox(ExtendedCanvas):
     def __init__(self,
                 parent,
                 checked=False,
                 width=25,
-                height=25):
+                height=25,
+                checkchar=CHECK_MARK):
+        self.__checkchar = checkchar
         ExtendedCanvas.__init__(
             self,
             parent, width=width,
@@ -172,7 +176,7 @@ class SimpleCheckbox(ExtendedCanvas):
             self,
             self.center[0], 
             self.center[1],
-            CHECK_MARK if checked else '',
+            self.__checkchar if checked else '',
             fill='white',
             font=('TkDefaultFont', 12, 'bold')
         )
@@ -180,12 +184,12 @@ class SimpleCheckbox(ExtendedCanvas):
 
     @property
     def checked(self):
-        return self.__text.text == CHECK_MARK
+        return self.__text.text == self.__checkchar
 
     @checked.setter
     def checked(self, value):
         if bool(value):
-            self.__text.text = CHECK_MARK
+            self.__text.text = self.__checkchar
         else:
             self.__text.text = ''
 
@@ -515,35 +519,44 @@ class ColorChooser(ExtendedCanvas):
     '''
     To get/set the color use 'color' property
     '''
-    def __init__(self, parent, initial_color, **kws):
-        kws.update(bg=parent['bg'], bd=0, highlightthickness=0)
+    def __init__(self, parent, color, **kws):
+        radius = kws.pop('radius', [5]*4)
+        kws.update(
+            bg=parent['bg'],
+            bd=0,
+            highlightthickness=0,
+            height=kws.get('height', 30)
+        )
         ExtendedCanvas.__init__(self, parent, **kws)
-        self.__color_index = self.__gen_index(initial_color)
-        self.__color = initial_color
+        self.__color = draw.RoundedRectangleDraw(self, [0,0,self.width,self.height],
+            radius=radius, fill=color, outline=color)
         self.bind('<1>', self.__show_chooser, '+')
 
+    @property
+    def radius(self):
+        return self.__color.radius
+
+    @radius.setter
+    def radius(self, value):
+        self.__color.radius = value
+
     def __show_chooser(self, evt):
-        rgb = tkColorChooser.askcolor(color=self.__color)[1]
+        rgb = tkColorChooser.askcolor(color=self.color)[1]
         if rgb:
             self.color = rgb
 
-    def __gen_index(self, initial_color):
-        return self.create_rounded_rectangle([0, 0, self.width, self.height],
-            [5,5,5,5], fill=initial_color, outline=initial_color)
-
     @property
     def color(self):
-        return self.__color
+        return self.__color.fill
 
     @color.setter
     def color(self, value):
-        self.__color = value
-        self.update()
+        self.__color.configure(fill=value, outline=value)
 
     def update(self):
         ExtendedCanvas.update(self)
-        self.delete(self.__color_index)
-        self.__color_index = self.__gen_index(self.color)
+        self.__color.width = self.width
+        self.__color.height = self.height
 
     @property
     def value(self):
@@ -1132,3 +1145,32 @@ class PopUpMenu(SubWindow):
 
     def show(self):
         self.deiconify()
+
+if __name__ == '__main__':
+    top = Window()
+    Label(top, text='SimpleCheckbox').pack()
+    SimpleCheckbox(top, checked=True).pack()
+    Label(top, text='ColorChooser').pack()
+    ColorChooser(top, color='black').pack()
+
+    Label(top, text='Button').pack()
+    Button(top, text='ok').pack()
+
+    Label(top, text='MarkDownLabel').pack()
+    MarkDownLabel(top, text='# H1\n## H2\n ### H3\n*bold* _italic_', height=10).pack()
+
+    Label(top, text='Entry (integers only)').pack()
+    e = Entry(top, integersonly=True, numbersonly=True)
+    e.text = 'text'
+    e.pack()
+
+    Label(top, text='PlaceHoldedEntry').pack()
+    PlaceHoldedEntry(top, placeholder='Name', width=300, text='ok').pack(side='left')
+
+    Label(top, text='HorizontalLine').pack()
+    HorizontalLine(top, width=300).pack(pady=5)
+
+    l = Listbox(top, height=3)
+    l.insert('end', 'item 1'); l.insert('end', 'item 2')
+    l.pack()
+    top.mainloop()
