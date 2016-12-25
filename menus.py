@@ -135,7 +135,7 @@ class CommandChooserWindow(SubWindow):
         self.__items = value
 
 class OptionMenu(widgets.Button):
-    def __init__(self, master, options=[], initial_index=0, **kws):
+    def __init__(self, master, options=[], initial_index=0, get_items_func=None, **kws):
         '''
         options = [
             {
@@ -145,8 +145,12 @@ class OptionMenu(widgets.Button):
             },
             {}, {} ...
         ]
+
+        If get_items_func is provided the items will be the result of call
+        of this function
         '''
         self.__options = options
+        self.get_items_func = get_items_func
         widgets.Button.__init__(self, master, **kws)
 
         self.bind('<1>', self.__click, '+')
@@ -179,11 +183,17 @@ class OptionMenu(widgets.Button):
     def show(self, options=None):
         if options:
             self.options = options
+        if self.get_items_func:
+            self.options = self.get_items_func()
         CommandChooserWindow.popup(self.options)
 
     @property
     def value(self):
         return self.text
+
+    @value.setter
+    def value(self, value):
+        self.text = value
 
 if __name__ == '__main__':
     top = Window()

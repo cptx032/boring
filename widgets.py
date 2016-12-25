@@ -12,6 +12,22 @@ class Frame(Tkinter.Frame, object):
         Tkinter.Frame.__init__(self, *args, **kwargs)
         self['bg'] = self.master['bg']
 
+    @property
+    def width(self):
+        return int(self['width'])
+
+    @width.setter
+    def width(self, value):
+        self['width'] = value
+
+    @property
+    def height(self):
+        return int(self['height'])
+
+    @height.setter
+    def height(self, value):
+        self['height'] = value
+
 class ExtendedCanvas(Tkinter.Canvas, object):
     def __init__(self, *args, **kwargs):
         '''
@@ -77,6 +93,7 @@ class ExtendedCanvas(Tkinter.Canvas, object):
     @width.setter
     def width(self, value):
         self['width'] = value
+        self.update()
 
     @property
     def height(self):
@@ -85,6 +102,7 @@ class ExtendedCanvas(Tkinter.Canvas, object):
     @height.setter
     def height(self, value):
         self['height'] = value
+        self.update()
 
     def get_circle_point(self, cx, cy, radius, angle):
         '''
@@ -641,6 +659,12 @@ class Button(ExtendedCanvas):
     def font(self, value):
         self.__text.font = value
 
+    def update(self):
+        ExtendedCanvas.update(self)
+        self.__bg.width = self.width
+        self.__bg.height = self.height
+        self.__text.xy = [self.width/2, self.height/2]
+
 class Label(Tkinter.Label, object):
     def __init__(self, *args, **kwargs):
         Tkinter.Label.__init__(self, *args, **kwargs)
@@ -1146,8 +1170,85 @@ class PopUpMenu(SubWindow):
     def show(self):
         self.deiconify()
 
+class RemovableButton(Button):
+    def __init__(self, *args, **kws):
+        self.__removal_function = kws.pop('removal_function', None)
+        Button.__init__(self, *args, **kws)
+        self.__remove_button = draw.TextDraw(
+            self, self.width - 5, self.height/2, 'x',
+            anchor='e'
+        )
+        self.__remove_button.bind('<1>', self.__removal_button_click, '+')
+
+    def __removal_button_click(self, event=None):
+        if self.__removal_function:
+            self.__removal_function()
+
+    def update(self):
+        Button.update(self)
+        self.__remove_button.xy = [self.width-5, self.height/2]
+        self.__remove_button.font = self.font
+
+class DuplicatedRemovalButtonException(Exception):
+    pass
+
+class RemovalButtonsStack(Frame):
+    def __init__(self, *args, **kws):
+        '''
+        uniqueonly: boolean, if true you wont be add duplicated
+        buttons
+        '''
+        self.__buttons = []
+        self.__uniqueonly = kws.pop('uniqueonly', True)
+        Frame.__init__(self, *args, **kws)
+
+    def __gen_removal_function(self, button_text):
+        def __final(*args):
+            for i in self.__buttons:
+                if i.text == button_text:
+                    i.destroy()
+                    self.__buttons.remove(i)
+                    break
+        return __final
+
+    def buttons_exists(self, button_label):
+        for i in self.__buttons:
+            if i.text == button_label:
+                return True
+        return False
+
+    def add(self, button_text):
+        if self.__uniqueonly and self.buttons_exists(button_text):
+            raise DuplicatedRemovalButtonException()
+        btn = RemovableButton(
+            self,
+            text=button_text,
+            removal_function=self.__gen_removal_function(button_text),
+            width=self.width
+        )
+        self.__buttons.append(btn)
+        btn.pack()
+
+    def add_many(self, *buttons):
+        '''
+        buttons must be a list of strings
+        '''
+        for i in buttons:
+            self.add(i)
+
+    @property
+    def value(self):
+        buttons = []
+        for i in self.__buttons:
+            buttons.append(i.text)
+
 if __name__ == '__main__':
     top = Window()
+    Label(top, text='RemovalButtonsStack').pack()
+    r = RemovalButtonsStack(top, width=200, height=50)
+    r.add_many('black', 'red', 'orange', 'blue', 'gray')
+    r.pack()
+
     Label(top, text='SimpleCheckbox').pack()
     SimpleCheckbox(top, checked=True).pack()
     Label(top, text='ColorChooser').pack()

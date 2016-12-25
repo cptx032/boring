@@ -115,6 +115,15 @@ class TextDraw(BaseCanvasDraw):
         self.update()
 
     @property
+    def xy(self):
+        return self.coords
+
+    @xy.setter
+    def xy(self, value):
+        self.coords = value
+        self.update()
+
+    @property
     def fill(self):
         return self.style['fill']
 

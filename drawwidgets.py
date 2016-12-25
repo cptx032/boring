@@ -126,10 +126,7 @@ class DrawWindow(draw.RoundedRectangleDraw):
             self.__widget_draw.y = self.y + 20
 
     def adjust_size_widget(self):
-        # forcar o widget a se adaptar ao tamahno da janela (e nao o contrario)
-        # self.width = self.__widget.winfo_width() + 4
-        # self.height = 22 + self.__widget.winfo_height()
-        pass
+        self.__widget.width = self.width - 4
 
     def delete(self):
         draw.RoundedRectangleDraw.delete(self)
