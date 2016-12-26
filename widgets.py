@@ -1241,6 +1241,7 @@ class RemovalButtonsStack(Frame):
         buttons = []
         for i in self.__buttons:
             buttons.append(i.text)
+        return buttons
 
 if __name__ == '__main__':
     top = Window()
