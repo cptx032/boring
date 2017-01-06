@@ -6,6 +6,7 @@ import math
 import string
 import draw
 import dialog
+import animation
 
 class Frame(Tkinter.Frame, object):
     def __init__(self, *args, **kwargs):
@@ -426,7 +427,7 @@ class ExtendedListbox(ExtendedCanvas):
             self.desselect_all()
             self.select_item(self.__items[index])
 
-    def desselect_all(self):
+    def desselect_all(self, *args):
         for i in self.__items:
             i.selected = False
 
@@ -1243,8 +1244,84 @@ class RemovalButtonsStack(Frame):
             buttons.append(i.text)
         return buttons
 
+DEFAULT_CIRCLE_LOADER_STYLE = {
+    'bg': {
+        'width': 3, # levar em consideração o tamanho desse width para q o border n seja comido
+        'outline': '#ddd'
+    },
+    'text': {
+        'font': ('TkDefaultFont', 20)
+    },
+    'loader': {
+        'style': 'arc',
+        'width': 3,
+        'outline': '#00aacc',
+        'extent': 359.9,
+        'start': 0
+    }
+}
+class CircleLoader(ExtendedCanvas):
+    def __init__(self, master, *args, **kws):
+        kws.update(
+            width=kws.get('width', 100),
+            height=kws.get('height', 100),
+            bg=kws.get('bg', master['bg']),
+            bd=kws.get('bd', 0),
+            highlightthickness=kws.get('highlightthickness', 0)
+        )
+        text = kws.pop('text', '')
+        style = kws.pop('style', DEFAULT_CIRCLE_LOADER_STYLE)
+        style['bg'].update(
+            style='arc',
+            extent=359.9
+        )
+        ExtendedCanvas.__init__(self, *args, **kws)
+        self.__text = draw.TextDraw(self, self.width/2, self.height/2, text=text, **style['text'])
+        self.__bgloader = draw.ArcDraw(self, [1,1,self.width-1,self.height-1], **style['bg'])
+        self.__loader = draw.ArcDraw(self, [1,1,self.width-1,self.height-1], **style['loader'])
+        self.__tween = animation.Tween(self.after, self.__loader, loop=True, ifactor=0.05, ticker=100)
+
+
+    @property
+    def text(self):
+        return self.__text.text
+
+    @text.setter
+    def text(self, value):
+        self.__text.text = value
+
+    @property
+    def font(self):
+        return self.__text.font
+
+    @font.setter
+    def font(self, value):
+        self.__text.font = value
+
+    @property
+    def outlinewidth(self):
+        return self.__loader.arcwidth
+
+    def indeterminated(self):
+        # self.__tween.animate('startangle', 360, _from=0)
+        animation.Tween(self.after, self, loop=True, ifactor=0.05, ticker=50).animate('outlinewidth', 10, _from=1)
+
+    @outlinewidth.setter
+    def outlinewidth(self, value):
+        self.__loader.xy = [value/2]*2
+        self.__loader.width = self.width-value
+        self.__loader.height = self.height-value
+        self.__loader.arcwidth = value
+        self.__bgloader.arcwidth = value
+        self.__bgloader.xy = [value/2]*2
+        self.__bgloader.width = self.width-value
+        self.__bgloader.height = self.height-value
+
 if __name__ == '__main__':
     top = Window()
+    Label(top, text='CircleLoader').pack(side='left')
+    cl = CircleLoader(top); cl.outlinewidth = 10; cl.indeterminated()
+    cl.pack(side='left')
     Label(top, text='RemovalButtonsStack').pack()
     r = RemovalButtonsStack(top, width=200, height=50)
     r.add_many('black', 'red', 'orange', 'blue', 'gray')

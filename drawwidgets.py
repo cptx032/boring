@@ -47,12 +47,10 @@ DEFAULT_CLOSE_BTN_THEME = {
 
 class DrawWindow(draw.RoundedRectangleDraw):
     def __init__(self, master, x=0, y=0,
-            width=200, height=20,
+            width=200, height=40,
             widget=None, **kws):
 
         self.__widget = widget
-
-        # kws.update(fill=kws.get('fill', '#dbdbdb'))
 
         self.__close_btn_radius = kws.pop(
             'close_btn_radius', 10
@@ -97,15 +95,16 @@ class DrawWindow(draw.RoundedRectangleDraw):
         self.__title = draw.TextDraw(
             master,
             self.width/2,
-            self.__close_btn_padding * 2,
+            self.height/2,
             self.__title,
             anchor='center',
-            fill='#ddd'
+            fill='#ffffff',
+            font=('TkDefaultFont', 8, 'bold')
         )
 
         if self.__widget:
             self.__widget_draw = draw.WidgetDraw(
-                self.canvas, self.x, self.y+10,
+                self.canvas, self.x, self.y+self.height,
                 self.__widget, anchor='nw'
             )
             self.canvas.update_idletasks()
@@ -119,11 +118,12 @@ class DrawWindow(draw.RoundedRectangleDraw):
         self.__close_btn.height = self.__close_btn_radius
 
         self.__title.x = self.x + self.width / 2
-        self.__title.y = self.y + self.__close_btn_padding * 2
+        self.__title.y = self.y + self.height/2
 
         if self.__widget:
-            self.__widget_draw.x = self.x + 2
-            self.__widget_draw.y = self.y + 20
+            self.__widget.configure(bd=1, relief='solid', width=self.width-2)
+            self.__widget_draw.x = self.x
+            self.__widget_draw.y = self.y + self.height
 
     def adjust_size_widget(self):
         self.__widget.width = self.width - 4

@@ -80,6 +80,106 @@ class LineDraw(BaseCanvasDraw):
         self.coords[3] = value[1]
         self.update()
 
+class ArcDraw(BaseCanvasDraw):
+    def __init__(self, canvas, coords, **kws):
+        self.draw_func = canvas.create_arc
+        BaseCanvasDraw.__init__(self, canvas, coords, **kws)
+
+    @property
+    def x(self):
+        return self.coords[0]
+
+    @x.setter
+    def x(self, value):
+        self.coords[0] = value
+        self.update()
+
+    @property
+    def y(self):
+        return self.coords[1]
+
+    @y.setter
+    def y(self, value):
+        self.coords[1] = value
+        self.update()
+
+    @property
+    def xy(self):
+        return self.coords[:2]
+
+    @xy.setter
+    def xy(self, value):
+        self.coords[0] = value[0]
+        self.coords[1] = value[1]
+        self.update()
+
+    @property
+    def width(self):
+        return self.coords[2] - self.coords[0]
+
+    @width.setter
+    def width(self, value):
+        self.coords[2] = self.coords[0] + value
+        self.update()
+
+    @property
+    def height(self):
+        return self.coords[3] - self.coords[1]
+
+    @height.setter
+    def height(self, value):
+        self.coords[3] = self.coords[1] + value
+        self.update()
+
+    @property
+    def arcstyle(self):
+        return self.style.get('style')
+
+    @arcstyle.setter
+    def arcstyle(self, value):
+        # if value not in ('arc', 'chord', '')
+        self.configure(style=value)
+
+    @property
+    def arcwidth(self):
+        return self.style.get('width')
+
+    @arcwidth.setter
+    def arcwidth(self, value):
+        self.configure(width=value)
+
+    @property
+    def startangle(self):
+        return self.style.get('start')
+
+    @startangle.setter
+    def startangle(self, value):
+        self.configure(start=value)
+
+    @property
+    def endangle(self):
+        return self.style.get('extent')
+
+    @endangle.setter
+    def endangle(self, value):
+        self.configure(extent=value)
+
+    @property
+    def fill(self):
+        return self.style.get('fill')
+
+    @fill.setter
+    def fill(self, value):
+        self.configure(fill=value)
+
+    @property
+    def outline(self):
+        return self.style.get('outline')
+
+    @outline.setter
+    def outline(self, value):
+        self.configure(outline=value)
+
 class SimpleCurveDraw(BaseCanvasDraw):
     pass # TODO
 
@@ -468,3 +568,21 @@ class RoundedRectangleDraw(PolygonDraw):
     @outline.setter
     def outline(self, value):
         self.configure(outline=value)
+
+if __name__ == '__main__':
+    import window, widgets
+    top = window.Window()
+    ca = widgets.ExtendedCanvas(top)
+    ca.grid()
+    v = ArcDraw(ca, [10,10,110,110])
+    v.arcwidth = 2
+    v.arcstyle = 'arc'
+    v.outline = '#00aacc'
+    v.startangle = 0
+    v.endangle = 180
+    def _T(*Args):
+        v.startangle += 20
+        # print 'pass heres'
+    ca.bind('<Up>', _T, '+')
+    ca.focus_force()
+    top.mainloop()
