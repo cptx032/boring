@@ -89,7 +89,8 @@ class ExtendedCanvas(Tkinter.Canvas, object):
 
     @property
     def width(self):
-        return int(self['width']) - 1
+        self.update_idletasks()
+        return max(int(self['width']) - 1, int(self.winfo_width()))
 
     @width.setter
     def width(self, value):
@@ -98,7 +99,8 @@ class ExtendedCanvas(Tkinter.Canvas, object):
 
     @property
     def height(self):
-        return int(self['height']) - 1
+        self.update_idletasks()
+        return max(int(self['height']) - 1, int(self.winfo_height()))
 
     @height.setter
     def height(self, value):
@@ -456,23 +458,26 @@ class ScrollableExtendedListbox(Frame):
         Frame.__init__(self, master)
         side = kws.pop('side', 'right')
         self.__extended_listbox = ExtendedListbox(self, *args, **kws)
-        self.__scroll = Scrollbar(self, orient='vertical')
+        # self.__scroll = Scrollbar(self, orient='vertical')
 
-        self.__scroll.pack(
-            side=side,
-            fill='y',
-            expand='yes'
-        )
+        # self.__scroll.pack(
+        #     side=side,
+        #     fill='y'
+        # )
+        self.__scroll = FlatVerticalScroller(self)
+        self.__scroll.pack(fill='y', side=side)
         self.__extended_listbox.pack(
             expand='yes',
             fill='both'
         )
-        self.__scroll.config(
-            command=self.__extended_listbox.yview
+        self.__scroll.set_command(
+            self.__extended_listbox.yview
         )
+
         self.__extended_listbox.config(
             yscrollcommand=self.__scroll.set
         )
+
 
     # ALIAS
     def select_by_index(self, *args, **kws):
@@ -1316,6 +1321,37 @@ class CircleLoader(ExtendedCanvas):
         self.__bgloader.xy = [value/2]*2
         self.__bgloader.width = self.width-value
         self.__bgloader.height = self.height-value
+
+
+class FlatVerticalScroller(ExtendedCanvas):
+    def __init__(self, master, width=5):
+        self.__command = None
+        self.__diff = None
+        ExtendedCanvas.__init__(self, master, width=width)
+        self.__scroll = draw.RoundedRectangleDraw(
+            self, [0,0,0,0], fill='#888', radius=[0]*4
+        )
+        self.__scroll.bind('<B1-Motion>', self.__drag_handler, '+')
+        self.__scroll.bind('<ButtonRelease-1>', self.__release_handler, '+')
+
+    def __release_handler(self, event):
+        self.__diff = None
+
+    def __drag_handler(self, event):
+        if self.__command:
+            if self.__diff == None:
+                self.__diff = float(event.y) - self.__scroll.y
+            self.__command('moveto', (float(event.y)-self.__diff) / self.height)
+
+    def set_command(self, command):
+        self.__command = command
+
+    def set(self, top, down):
+        self.__scroll.coords = [
+            0, self.height*float(top),
+            self.width, self.height*float(down)
+        ]
+        self.__scroll.update()
 
 if __name__ == '__main__':
     top = Window()
