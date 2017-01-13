@@ -458,12 +458,6 @@ class ScrollableExtendedListbox(Frame):
         Frame.__init__(self, master)
         side = kws.pop('side', 'right')
         self.__extended_listbox = ExtendedListbox(self, *args, **kws)
-        # self.__scroll = Scrollbar(self, orient='vertical')
-
-        # self.__scroll.pack(
-        #     side=side,
-        #     fill='y'
-        # )
         self.__scroll = FlatVerticalScroller(self)
         self.__scroll.pack(fill='y', side=side)
         self.__extended_listbox.pack(
