@@ -168,17 +168,38 @@ class ExtendedCanvas(Tkinter.Canvas, object):
                 pos[1]])
         return self.create_polygon(*pts, **kwargs)
 
-# TODO: criar tema contendo o charcheck radius bg font etc
-# com as opções de checked e normal
+
 CHECK_MARK=unichr(10003)
+CHECKBOX_DEFAULT_THEME = {
+    'checked': {
+        'char': CHECK_MARK,
+        'bg': {
+            'fill': '#5cb85c'
+        },
+        'text': {
+            'fill': 'white',
+            'font': ('TkDefaultFont', 12, 'bold')
+        }
+    },
+    'unchecked': {
+        'bg': {
+            'fill': '#5cb85c'
+        },
+        'text': {
+            'fill': 'white',
+            'font': ('TkDefaultFont', 12, 'bold')
+        }
+    }
+}
 class SimpleCheckbox(ExtendedCanvas):
     def __init__(self,
                 parent,
                 checked=False,
                 width=25,
                 height=25,
-                checkchar=CHECK_MARK):
-        self.__checkchar = checkchar
+                theme=CHECKBOX_DEFAULT_THEME):
+        self.__theme = theme
+        self.__checked = checked
         ExtendedCanvas.__init__(
             self,
             parent, width=width,
@@ -190,29 +211,47 @@ class SimpleCheckbox(ExtendedCanvas):
 
         self.__bg = draw.RoundedRectangleDraw(
             self,
-            [0, 0, width, height],
-            fill='#5cb85c'
+            [2, 2, width-1-2, height-1-2],
+            **self.current_theme.get('bg', {})
         )
         self.__text = draw.TextDraw(
             self,
             self.center[0], 
             self.center[1],
-            self.__checkchar if checked else '',
-            fill='white',
-            font=('TkDefaultFont', 12, 'bold')
+            self.checked_text,
+            **self.current_theme.get('text', {})
         )
         self.bind('<1>', self.__check_click, '+')
 
     @property
+    def checked_text(self):
+        '''
+        Returns the character of check
+        '''
+        return self.__theme['checked'].get('char') if self.checked else ''
+
+    @property
+    def theme(self):
+        return self.__theme
+
+    @property
+    def current_theme(self):
+        return self.theme['checked'] if self.checked else self.theme['unchecked']
+
+    @theme.setter
+    def theme(self, value):
+        self.__theme = value
+
+    @property
     def checked(self):
-        return self.__text.text == self.__checkchar
+        return self.__checked
 
     @checked.setter
     def checked(self, value):
-        if bool(value):
-            self.__text.text = self.__checkchar
-        else:
-            self.__text.text = ''
+        self.__checked = bool(value)
+        self.__text.text = self.checked_text
+        self.__bg.configure(**self.current_theme.get('bg', {}))
+        self.__text.configure(**self.current_theme.get('text', {}))
 
     def __check_click(self, event):
         '''
@@ -816,9 +855,14 @@ class LabeledSimpleCheckbox(Frame):
     '''
     a simplecheckbox with a label
     '''
-    def __init__(self, master, text='', checked=False):
+    def __init__(self, master, text='', checkclass=SimpleCheckbox, **checkinitkws):
+        '''
+        checkclass: the check button class to use
+        checkinitkws: the kws that will be passed to Checkbox instance
+        '''
+        self.__checkclass = checkclass
         Frame.__init__(self, master)
-        self.checkbutton = SimpleCheckbox(self, checked)
+        self.checkbutton = checkclass(self, **checkinitkws)
         self.checkbutton.pack(anchor='nw', pady=5, padx=5, side='left')
         self.label = Label(self, text=text)
         self.label.pack(expand='yes', anchor='w')

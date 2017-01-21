@@ -569,6 +569,11 @@ class RoundedRectangleDraw(PolygonDraw):
     def outline(self, value):
         self.configure(outline=value)
 
+    def configure(self, **kws):
+        if 'radius' in kws:
+            self.radius = kws.pop('radius')
+        PolygonDraw.configure(self, **kws)
+
 if __name__ == '__main__':
     import window, widgets
     top = window.Window()
