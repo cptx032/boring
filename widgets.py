@@ -1,7 +1,6 @@
 # coding: utf-8
 
 from window import *
-import ttk
 import math
 import string
 import draw
@@ -1164,10 +1163,6 @@ class Listbox(Tkinter.Listbox):
         self['activestyle'] = 'none'
 
 class OptionMenu(Tkinter.OptionMenu):
-    pass
-
-
-class Scrollbar(ttk.Scrollbar):
     pass
 
 
