@@ -583,6 +583,7 @@ class ColorChooser(ExtendedCanvas):
             highlightthickness=0,
             height=kws.get('height', 30)
         )
+        self.on_choose = kws.pop('on_choose', None)
         ExtendedCanvas.__init__(self, parent, **kws)
         self.__color = draw.RoundedRectangleDraw(self, [0,0,self.width,self.height],
             radius=radius, fill=color, outline=color)
@@ -600,6 +601,8 @@ class ColorChooser(ExtendedCanvas):
         rgb = tkColorChooser.askcolor(color=self.color)[1]
         if rgb:
             self.color = rgb
+            if self.on_choose:
+                self.on_choose(evt)
 
     @property
     def color(self):
