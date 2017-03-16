@@ -101,3 +101,5 @@ class Window(Tkinter.Tk, GenericWindow):
             bg=bg
         )
 
+    def enable_escape(self):
+        self.bind('<Escape>', lambda *args, **kws : self.destroy(), '+')
