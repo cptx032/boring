@@ -25,6 +25,10 @@ class GenericWindow(object):
     def caption(self, value):
         self.title(value)
 
+    def maximize(self):
+        # TODO: Windows
+        self.attributes('-zoomed', 1)
+
     def center(self):
         '''
         centralizes the window in the screen
