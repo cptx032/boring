@@ -20,16 +20,19 @@ def darken_color(color, offset=-20):
 
 class RaisedButton(ExtendedCanvas):
     def __init__(self, *args, **kwargs):
-        _wi, _he = kwargs.pop('width', 100), kwargs.pop('height', 25)
+        _wi, _he = kwargs.pop('width', 100), kwargs.pop('height', 40)
         self.radius = kwargs.pop('radius', [2, 2, 2, 2])
         self.level = 1
-        self.__bg_color = kwargs.pop('bgcolor', BG_COLOR)
+        self.__bg_color = kwargs.pop('bgcolor', '#3498db')
         self.__font = kwargs.pop('font', ('TkDefaultFont', 10))
         self.__bottom_offset = kwargs.pop('bottomoffset', 5)
-        _fg_color = kwargs.pop('fgcolor', 'black')
-
+        _fg_color = kwargs.pop('fgcolor', 'white')
         _text = kwargs.pop('text', '')
         self.command = kwargs.pop('command', None)
+
+        if not kwargs.pop('default', None) == 'active':
+            self.__bg_color = '#ecf0f1'
+            _fg_color = '#555'
 
         kwargs.update(width=_wi, height=_he, bg=BG_COLOR)
         kwargs.update(cursor='hand1')

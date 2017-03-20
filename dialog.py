@@ -6,13 +6,15 @@ class DefaultDialog(SubWindow):
     Class to open dialogs.
     This class is intended as a base class for custom dialogs
     '''
-    def __init__(self, parent, title=None, show_in_start=True):
+    def __init__(self, parent, title=None, show_in_start=True, button_class=widgets.Button):
         '''
         Initialize a dialog.
         Arguments:
             parent -- a parent window (the application window)
             title -- the dialog title
+            button_class -- the class used to render default buttons
         '''
+        self.button_class = button_class
         SubWindow.__init__(self, parent)
         self['bg'] = parent['bg']
 
@@ -79,9 +81,9 @@ class DefaultDialog(SubWindow):
         '''
         box = widgets.Frame(self)
 
-        w = widgets.Button(box, text='OK', command=self.ok, default='active')
+        w = self.button_class(box, text='OK', command=self.ok, default='active')
         w.pack(side='left', padx=5, pady=5)
-        w = widgets.Button(box, text='Cancel', command=self.cancel)
+        w = self.button_class(box, text='Cancel', command=self.cancel)
         w.pack(side='left', padx=5, pady=5)
 
         self.bind('<Return>', self.ok)

@@ -60,7 +60,7 @@ class FormFrame(widgets.Frame):
                 self,
                 text='### %s' % (self.__title),
                 height=2,
-                width=30
+                width=30,
             )
             self.__markdown_title.grid(
                 sticky='w', pady=10
