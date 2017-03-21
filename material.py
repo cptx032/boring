@@ -31,7 +31,7 @@ class RaisedButton(ExtendedCanvas):
         self.command = kwargs.pop('command', None)
 
         if not kwargs.pop('default', None) == 'active':
-            self.__bg_color = '#ecf0f1'
+            self.__bg_color = '#dddddd'
             _fg_color = '#555'
 
         kwargs.update(width=_wi, height=_he, bg=BG_COLOR)
