@@ -587,7 +587,7 @@ class ColorChooser(ExtendedCanvas):
         ExtendedCanvas.__init__(self, parent, **kws)
         self.__color = draw.RoundedRectangleDraw(self, [0,0,self.width,self.height],
             radius=radius, fill=color, outline=color)
-        self.bind('<1>', self.__show_chooser, '+')
+        self.bind('<1>', self.choose, '+')
 
     @property
     def radius(self):
@@ -597,7 +597,7 @@ class ColorChooser(ExtendedCanvas):
     def radius(self, value):
         self.__color.radius = value
 
-    def __show_chooser(self, evt):
+    def choose(self, evt):
         rgb = tkColorChooser.askcolor(color=self.color)[1]
         if rgb:
             self.color = rgb
