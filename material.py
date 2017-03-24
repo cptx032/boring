@@ -2,6 +2,7 @@ from widgets import ExtendedCanvas
 import draw
 import window
 from window import BG_COLOR
+import tkColorChooser
 
 def format_color(c):
     return min(max(c, 0), 255)
@@ -30,6 +31,7 @@ class RaisedButton(ExtendedCanvas):
         _text = kwargs.pop('text', '')
         self.command = kwargs.pop('command', None)
 
+        # fixme: if you pass any color in constructor it will be overrided
         if not kwargs.pop('default', None) == 'active':
             self.__bg_color = '#dddddd'
             _fg_color = '#555'
@@ -111,6 +113,19 @@ class RaisedButton(ExtendedCanvas):
         self.__bg.height = self.height
         self.__text.xy = [self.width/2, self.height/2]
 
+
+class RaisedColorPicker(RaisedButton):
+    def __init__(self, *args, **kwargs):
+        self.on_choose = kwargs.pop('on_choose', None)
+        RaisedButton.__init__(self, *args, **kwargs)
+        self.bind('<1>', self.choose, '+')
+
+    def choose(self, event=None):
+        rgb = tkColorChooser.askcolor(color=self.bgcolor)[1]
+        if rgb:
+            self.bgcolor = rgb
+            if self.on_choose:
+                self.on_choose(event)
 
 if __name__ == '__main__':
     top = window.Window(bg='#ffffff')
