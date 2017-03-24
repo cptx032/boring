@@ -165,9 +165,9 @@ class MessageBox:
         )
 
 class OkCancel(DefaultDialog):
-    def __init__(self, parent, msg, title=None):
+    def __init__(self, parent, msg, title=None, **kwargs):
         self.msg = msg
-        DefaultDialog.__init__(self, parent, title)
+        DefaultDialog.__init__(self, parent, title, **kwargs)
 
     def body(self, parent):
         self.output = False
