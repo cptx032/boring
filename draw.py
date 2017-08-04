@@ -351,10 +351,23 @@ class ImageDraw(BaseCanvasDraw):
 
 class RectangleDraw(BaseCanvasDraw):
     def __init__(self, canvas, x, y, width, height, **kws):
-        BaseCanvasDraw.__init__(self, canvas, [x, y, x + width, y + height], **kws)
+        self.__coords = [x, y, x + width, y + height]
+        BaseCanvasDraw.__init__(self, canvas, self.__coords, **kws)
 
     def get_drawing_function(self):
         return self.canvas.create_rectangle
+
+    @property
+    def coords(self):
+        return self.__coords
+
+    @coords.setter
+    def coords(self, coords):
+        self.__coords = [
+            coords[0], coords[1],
+            coords[0] + coords[2],
+            coords[1] + coords[3]
+        ]
 
     @property
     def x(self):
@@ -438,7 +451,6 @@ class OvalDraw(RectangleDraw):
 
 class PolygonDraw(BaseCanvasDraw):
     def __init__(self, canvas, *coords, **kws):
-        self.draw_func = canvas.create_polygon
         BaseCanvasDraw.__init__(self, canvas, coords, **kws)
 
     def get_drawing_function(self):
@@ -454,10 +466,10 @@ class PolygonDraw(BaseCanvasDraw):
 
 
 class RoundedRectangleDraw(PolygonDraw):
-    def __init__(self, canvas, coords, radius=[2, 2, 2, 2], **kws):
-        self.__coords = coords
+    def __init__(self, canvas, x, y, width, height, radius=[2, 2, 2, 2], **kws):
+        self.__coords = [x, y, x + width, y + height]
         self.__radius = radius
-        PolygonDraw.__init__(self, canvas, self.__coords, **kws)
+        PolygonDraw.__init__(self, canvas, *self.__coords, **kws)
 
     @property
     def radius(self):
@@ -473,20 +485,6 @@ class RoundedRectangleDraw(PolygonDraw):
         self.x += x
         self.y += y
 
-    def get_circle_point(self, cx, cy, radius, angle):
-        '''
-        Returns the position of a vertex2D of a circle
-        which center is in [cx,cy] position and radius 'radius'
-        in the angle 'angle'
-        '''
-        # angle in degree
-        angle = math.radians(angle)
-        y = math.sin(angle) * radius
-        x = math.cos(angle) * radius
-        x += cx
-        y = cy - y
-        return [x, y]
-
     @property
     def coords(self):
         pts = []
@@ -495,7 +493,7 @@ class RoundedRectangleDraw(PolygonDraw):
             cx = self.__coords[0] + self.radius[0]
             cy = self.__coords[1] + self.radius[0]
             for i in range(90, 180):
-                pts.extend(self.get_circle_point(cx,cy,
+                pts.extend(self.canvas.get_circle_point(cx,cy,
                     self.radius[0], i))
         else:
             pts.extend([self.__coords[0], self.__coords[1]])
@@ -504,7 +502,7 @@ class RoundedRectangleDraw(PolygonDraw):
             cx = self.__coords[0] + self.radius[1]
             cy = self.__coords[3] - self.radius[1]
             for i in range(180, 270):
-                pts.extend(self.get_circle_point(cx, cy,
+                pts.extend(self.canvas.get_circle_point(cx, cy,
                     self.radius[1], i))
         else:
             pts.extend([self.__coords[0], self.__coords[3]])
@@ -514,7 +512,7 @@ class RoundedRectangleDraw(PolygonDraw):
             cx = self.__coords[2] - self.radius[2]
             cy = self.__coords[3] - self.radius[2]
             for i in range(270, 360):
-                pts.extend(self.get_circle_point(cx,cy,
+                pts.extend(self.canvas.get_circle_point(cx,cy,
                     self.radius[2],i))
         else:
             pts.extend([self.__coords[2],
@@ -524,7 +522,7 @@ class RoundedRectangleDraw(PolygonDraw):
             cx = self.__coords[2] - self.radius[3]
             cy = self.__coords[1] + self.radius[3]
             for i in range(0, 90):
-                pts.extend(self.get_circle_point(cx,cy,
+                pts.extend(self.canvas.get_circle_point(cx,cy,
                     self.radius[3],i))
         else:
             pts.extend([self.__coords[2],
