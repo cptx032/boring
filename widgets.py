@@ -7,6 +7,16 @@ import draw
 import dialog
 import animation
 
+class BaseWidget(object):
+    def grid(self, *args, **kwargs):
+        super(BaseWidget, self).grid(*args, **kwargs)
+        return self
+
+    def pack(self, *args, **kwargs):
+        super(BaseWidget, self).pack(*args, **kwargs)
+        return self
+
+
 class Frame(Tkinter.Frame, object):
     def __init__(self, *args, **kwargs):
         Tkinter.Frame.__init__(self, *args, **kwargs)
@@ -28,7 +38,7 @@ class Frame(Tkinter.Frame, object):
     def height(self, value):
         self['height'] = value
 
-class ExtendedCanvas(Tkinter.Canvas, object):
+class ExtendedCanvas(BaseWidget, Tkinter.Canvas):
     def __init__(self, *args, **kwargs):
         '''
         draggable: if true can drag entire scene
@@ -36,6 +46,7 @@ class ExtendedCanvas(Tkinter.Canvas, object):
         '''
         self.__items = []
         self.draggable = kwargs.pop('draggable', False)
+        BaseWidget.__init__(self)
         Tkinter.Canvas.__init__(self, *args, **kwargs)
         self.bind('<B3-Motion>', self.__drag_items, '+')
         self.bind('<ButtonRelease-3>', self.__clear_last_drag_point, '+')

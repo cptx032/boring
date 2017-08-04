@@ -8,12 +8,13 @@ class BaseCanvasDraw(object):
         self.style = kws
         # override this to Canvas.create_something
         # self.draw_func = None
-        self.__index = self.draw()
-        if hasattr(canvas, 'add_drag_item'):
-            canvas.add_drag_item(self)
+        self.__index = self.generate_canvas_index()(*self.coords, **self.style)
 
-    def draw(self):
-        return self.draw_func(*self.coords, **self.style)
+    def generate_canvas_index(self):
+        return self.get_drawing_function()
+
+    def get_drawing_function(self):
+        raise NotImplementedError
 
     def update(self):
         self.canvas.coords(self.__index, *self.coords)
@@ -45,20 +46,23 @@ class BaseCanvasDraw(object):
         redraws and change the index
         '''
         self.delete()
-        self.__index = self.draw()
+        self.__index = self.generate_canvas_index()(*self.coords, **self.style)
 
     def configure(self, **kws):
         self.style.update(**kws)
         self.update()
 
+
 class LineDraw(BaseCanvasDraw):
     def __init__(self, canvas, x1, y1, x2, y2, **kws):
-        self.draw_func = canvas.create_line
         BaseCanvasDraw.__init__(
             self,
             canvas, [x1, y1, x2, y2],
             **kws
         )
+
+    def get_drawing_function(self):
+        return self.canvas.create_line
 
     @property
     def p1(self):
@@ -80,10 +84,13 @@ class LineDraw(BaseCanvasDraw):
         self.coords[3] = value[1]
         self.update()
 
+
 class ArcDraw(BaseCanvasDraw):
     def __init__(self, canvas, coords, **kws):
-        self.draw_func = canvas.create_arc
         BaseCanvasDraw.__init__(self, canvas, coords, **kws)
+
+    def get_drawing_function(self):
+        return self.canvas.create_arc
 
     @property
     def x(self):
@@ -180,13 +187,16 @@ class ArcDraw(BaseCanvasDraw):
     def outline(self, value):
         self.configure(outline=value)
 
+
 class SimpleCurveDraw(BaseCanvasDraw):
     pass # TODO
 
 class TextDraw(BaseCanvasDraw):
-    def __init__(self, canvas, x, y, text, **kws):
-        self.draw_func = canvas.create_text
-        BaseCanvasDraw.__init__(self, canvas, [x, y], text=text, **kws)
+    def __init__(self, canvas, x, y, **kws):
+        BaseCanvasDraw.__init__(self, canvas, [x, y], **kws)
+
+    def get_drawing_function(self):
+        return self.canvas.create_text
 
     @property
     def text(self):
@@ -239,9 +249,9 @@ class TextDraw(BaseCanvasDraw):
     def font(self, value):
         self.configure(font=value)
 
+
 class WidgetDraw(BaseCanvasDraw):
     def __init__(self, canvas, x, y, widget, **kws):
-        self.draw_func = canvas.create_window
         BaseCanvasDraw.__init__(
             self,
             canvas,
@@ -249,6 +259,9 @@ class WidgetDraw(BaseCanvasDraw):
             window=widget,
             **kws
         )
+
+    def get_drawing_function(self):
+        return self.canvas.create_window
 
     @property
     def x(self):
@@ -276,15 +289,20 @@ class WidgetDraw(BaseCanvasDraw):
     def widget(self, value):
         self.configure(window=value)
 
+
 class ImageDraw(BaseCanvasDraw):
     def __init__(self, canvas, x, y, image, **kws):
         '''
         image: can be string or ImageTk.PhotoImage instance
         '''
-        self.draw_func = canvas.create_image
-        BaseCanvasDraw.__init__(self, canvas,
+        # fixme: verify types
+        BaseCanvasDraw.__init__(
+            self, canvas,
             [x, y],
             image=ImageTk.PhotoImage(file=image) if type(image) in (str, unicode) else image, **kws)
+
+    def get_drawing_function(self):
+        return self.canvas.create_image
 
     @property
     def image(self):
@@ -330,10 +348,13 @@ class ImageDraw(BaseCanvasDraw):
         # does nothing
         self.update()
 
+
 class RectangleDraw(BaseCanvasDraw):
     def __init__(self, canvas, x, y, width, height, **kws):
-        self.draw_func = canvas.create_rectangle
         BaseCanvasDraw.__init__(self, canvas, [x, y, x + width, y + height], **kws)
+
+    def get_drawing_function(self):
+        return self.canvas.create_rectangle
 
     @property
     def x(self):
@@ -382,10 +403,9 @@ class RectangleDraw(BaseCanvasDraw):
 
 
 class OvalDraw(RectangleDraw):
-    def __init__(self, canvas, x, y, width, height, **kws):
-        RectangleDraw.__init__(self, canvas, x, y, width, height, **kws)
-        self.draw_func = canvas.create_oval
-        self.reset()
+
+    def get_drawing_function(self):
+        return self.create_oval
 
     @property
     def radius(self):
@@ -417,9 +437,12 @@ class OvalDraw(RectangleDraw):
 
 
 class PolygonDraw(BaseCanvasDraw):
-    def __init__(self, canvas, coords, **kws):
+    def __init__(self, canvas, *coords, **kws):
         self.draw_func = canvas.create_polygon
         BaseCanvasDraw.__init__(self, canvas, coords, **kws)
+
+    def get_drawing_function(self):
+        return self.canvas.create_polygon
 
     @property
     def fill(self):
