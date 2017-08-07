@@ -221,14 +221,14 @@ class SimpleCheckbox(ExtendedCanvas):
 
         self.__bg = draw.RoundedRectangleDraw(
             self,
-            [2, 2, width-1-2, height-1-2],
+            2, 2, width-1-2, height-1-2,
             **self.current_theme.get('bg', {})
         )
         self.__text = draw.TextDraw(
             self,
             self.center[0], 
             self.center[1],
-            self.checked_text,
+            text=self.checked_text,
             **self.current_theme.get('text', {})
         )
         self.bind('<1>', self.__check_click, '+')
@@ -291,10 +291,10 @@ class ExtendedListboxItem(object):
         self.__rec_bg = draw.RectangleDraw(canvas, 1, 1+yoffset,
             canvas.width, 40, fill=self.canvas['bg'], outline='')
 
-        self.__title = draw.TextDraw(canvas, 50, 7 + yoffset, title,
+        self.__title = draw.TextDraw(canvas, 50, 7 + yoffset, text=title,
             anchor='nw', font=('TkDefaultFont', 10))
         self.__subtitle = draw.TextDraw(canvas, 50, 22 + yoffset,
-            subtitle, anchor='nw', font=('TkDefaultFont',8), fill='#555')
+            text=subtitle, anchor='nw', font=('TkDefaultFont',8), fill='#555')
         self.__icon = draw.ImageDraw(self.canvas, 5, 6+yoffset, icon, anchor='nw') if icon else None
 
         self.bind('<Enter>', self.__mouse_over, '+')
@@ -1376,7 +1376,7 @@ class FlatVerticalScroller(ExtendedCanvas):
         self.__diff = None
         ExtendedCanvas.__init__(self, master, width=width)
         self.__scroll = draw.RoundedRectangleDraw(
-            self, [0,0,0,0], fill='#888', radius=[0]*4
+            self, 0,0,0,0, fill='#888', radius=[0]*4
         )
         self.__scroll.bind('<B1-Motion>', self.__drag_handler, '+')
         self.__scroll.bind('<ButtonRelease-1>', self.__release_handler, '+')

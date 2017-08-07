@@ -42,23 +42,23 @@ class RaisedButton(ExtendedCanvas):
         self.update_idletasks()
 
         self.__shadow = draw.RoundedRectangleDraw(
-            self, [0,0,self.width, self.height],
+            self, 0,0,self.width, self.height,
             radius=self.radius, fill=darken_color(self.__bg_color),
             outline=darken_color(self.__bg_color)
         )
 
         self.__bg = draw.RoundedRectangleDraw(
-            self, [0, 0, self.width, self.height-self.__bottom_offset],
+            self, 0, 0, self.width, self.height-self.__bottom_offset,
             radius=self.radius, fill=self.__bg_color,
-            outline=self.__bg_color,
-            width=0
+            outline=self.__bg_color
         )
+        self.__bg.configure(width=0)
 
         self.__text = draw.TextDraw(
             self,
             self.width / 2,
             self.height / 2,
-            _text,
+            text=_text,
             fill=_fg_color,
             font=self.__font
         )

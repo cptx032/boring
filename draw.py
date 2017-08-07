@@ -466,8 +466,8 @@ class PolygonDraw(BaseCanvasDraw):
 
 
 class RoundedRectangleDraw(PolygonDraw):
-    def __init__(self, canvas, x, y, width, height, radius=[2, 2, 2, 2], **kws):
-        self.__coords = [x, y, x + width, y + height]
+    def __init__(self, canvas, x, y, _width, height, radius=[2, 2, 2, 2], **kws):
+        self.__coords = [x, y, x + _width, y + height]
         self.__radius = radius
         PolygonDraw.__init__(self, canvas, *self.__coords, **kws)
 
@@ -531,7 +531,11 @@ class RoundedRectangleDraw(PolygonDraw):
 
     @coords.setter
     def coords(self, value):
-        self.__coords = value
+        self.__coords = [
+            value[0], value[1],
+            value[0] + value[2],
+            value[1] + value[3]
+        ]
         # self.update()
 
     @property
