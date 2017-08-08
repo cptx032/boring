@@ -350,8 +350,8 @@ class ImageDraw(BaseCanvasDraw):
 
 
 class RectangleDraw(BaseCanvasDraw):
-    def __init__(self, canvas, x, y, width, height, **kws):
-        self.__coords = [x, y, x + width, y + height]
+    def __init__(self, canvas, x, y, _width, height, **kws):
+        self.__coords = [x, y, x + _width, y + height]
         BaseCanvasDraw.__init__(self, canvas, self.__coords, **kws)
 
     def get_drawing_function(self):
