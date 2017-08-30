@@ -1,5 +1,13 @@
-import math
-import ImageTk
+# coding: utf-8
+from window import tk
+
+PhotoImage = tk.PhotoImage
+try:
+    from PIL import ImageTk
+    PhotoImage = ImageTk.PhotoImage
+except:
+    pass
+
 
 class BaseCanvasDraw(object):
     def __init__(self, canvas, coords, **kws):
@@ -189,7 +197,8 @@ class ArcDraw(BaseCanvasDraw):
 
 
 class SimpleCurveDraw(BaseCanvasDraw):
-    pass # TODO
+    pass  # TODO
+
 
 class TextDraw(BaseCanvasDraw):
     def __init__(self, canvas, x, y, **kws):
@@ -293,13 +302,13 @@ class WidgetDraw(BaseCanvasDraw):
 class ImageDraw(BaseCanvasDraw):
     def __init__(self, canvas, x, y, image, **kws):
         '''
-        image: can be string or ImageTk.PhotoImage instance
+        image: can be string or a PhotoImage instance
         '''
         # fixme: verify types
         BaseCanvasDraw.__init__(
             self, canvas,
             [x, y],
-            image=ImageTk.PhotoImage(file=image) if type(image) in (str, unicode) else image, **kws)
+            image=PhotoImage(file=image) if type(image) in (str, unicode) else image, **kws)
 
     def get_drawing_function(self):
         return self.canvas.create_image
@@ -411,7 +420,7 @@ class RectangleDraw(BaseCanvasDraw):
         is inside oval
         '''
         in_x = (x >= self.x) and (x <= (self.x + self.width))
-        in_y = (y >= self.y) and (y <= (self.y  +self.height))
+        in_y = (y >= self.y) and (y <= (self.y + self.height))
         return in_x and in_y
 
 
@@ -493,7 +502,8 @@ class RoundedRectangleDraw(PolygonDraw):
             cx = self.__coords[0] + self.radius[0]
             cy = self.__coords[1] + self.radius[0]
             for i in range(90, 180):
-                pts.extend(self.canvas.get_circle_point(cx,cy,
+                pts.extend(self.canvas.get_circle_point(
+                    cx, cy,
                     self.radius[0], i))
         else:
             pts.extend([self.__coords[0], self.__coords[1]])
@@ -502,8 +512,11 @@ class RoundedRectangleDraw(PolygonDraw):
             cx = self.__coords[0] + self.radius[1]
             cy = self.__coords[3] - self.radius[1]
             for i in range(180, 270):
-                pts.extend(self.canvas.get_circle_point(cx, cy,
-                    self.radius[1], i))
+                pts.extend(
+                    self.canvas.get_circle_point(
+                        cx, cy, self.radius[1], i
+                    )
+                )
         else:
             pts.extend([self.__coords[0], self.__coords[3]])
 
@@ -512,21 +525,23 @@ class RoundedRectangleDraw(PolygonDraw):
             cx = self.__coords[2] - self.radius[2]
             cy = self.__coords[3] - self.radius[2]
             for i in range(270, 360):
-                pts.extend(self.canvas.get_circle_point(cx,cy,
-                    self.radius[2],i))
+                pts.extend(
+                    self.canvas.get_circle_point(cx, cy, self.radius[2], i)
+                )
         else:
             pts.extend([self.__coords[2],
-                self.__coords[3]])
+                        self.__coords[3]])
         # NE
         if self.radius[3]:
             cx = self.__coords[2] - self.radius[3]
             cy = self.__coords[1] + self.radius[3]
             for i in range(0, 90):
-                pts.extend(self.canvas.get_circle_point(cx,cy,
-                    self.radius[3],i))
+                pts.extend(
+                    self.canvas.get_circle_point(cx, cy, self.radius[3], i)
+                )
         else:
             pts.extend([self.__coords[2],
-                self.__coords[1]])
+                        self.__coords[1]])
         return pts
 
     @coords.setter

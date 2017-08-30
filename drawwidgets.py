@@ -1,6 +1,7 @@
 import draw
 import drag
 
+
 class CanvasGrid(object):
     def __init__(self, canvas, x, y):
         self.canvas = canvas
@@ -30,10 +31,12 @@ class CanvasGrid(object):
         if (not self.x) or (not self.y):
             return
         for i in range(0, self.canvas.width, self.canvas.width / self.x):
-            self.canvas.create_line(i, 0, i, self.canvas.height-1, fill='red',
+            self.canvas.create_line(
+                i, 0, i, self.canvas.height - 1, fill='red',
                 tag=('_-_grid-_-'), dash=(5,))
         for i in range(0, self.canvas.height, self.canvas.height / self.y):
-            self.canvas.create_line(0, i, self.canvas.width-1, i, fill='red',
+            self.canvas.create_line(
+                0, i, self.canvas.width - 1, i, fill='red',
                 tag=('_-_grid-_-'), dash=(5,))
 
     def update(self):
@@ -45,8 +48,10 @@ DEFAULT_CLOSE_BTN_THEME = {
     'fill': '#bbbbbb'
 }
 
+
 class DrawWindow(draw.RoundedRectangleDraw):
-    def __init__(self, master, x=0, y=0,
+    def __init__(
+            self, master, x=0, y=0,
             width=200, height=40,
             widget=None, **kws):
 
@@ -71,7 +76,7 @@ class DrawWindow(draw.RoundedRectangleDraw):
         )
         draw.RoundedRectangleDraw.__init__(
             self, master,
-            [x, y, x+width, y+height],
+            [x, y, x + width, y + height],
             **kws
         )
 
@@ -82,8 +87,8 @@ class DrawWindow(draw.RoundedRectangleDraw):
 
         self.__close_btn = draw.OvalDraw(
             master,
-            self.x+self.__close_btn_padding,
-            self.y+self.__close_btn_padding,
+            self.x + self.__close_btn_padding,
+            self.y + self.__close_btn_padding,
             self.__close_btn_radius,
             self.__close_btn_radius,
             **self.__close_btn_theme
@@ -94,8 +99,8 @@ class DrawWindow(draw.RoundedRectangleDraw):
 
         self.__title = draw.TextDraw(
             master,
-            self.width/2,
-            self.height/2,
+            self.width / 2,
+            self.height / 2,
             self.__title,
             anchor='center',
             fill='#ffffff',
@@ -104,7 +109,7 @@ class DrawWindow(draw.RoundedRectangleDraw):
 
         if self.__widget:
             self.__widget_draw = draw.WidgetDraw(
-                self.canvas, self.x, self.y+self.height,
+                self.canvas, self.x, self.y + self.height,
                 self.__widget, anchor='nw'
             )
             self.canvas.update_idletasks()
@@ -112,16 +117,16 @@ class DrawWindow(draw.RoundedRectangleDraw):
 
     def update(self):
         draw.RoundedRectangleDraw.update(self)
-        self.__close_btn.x = self.x+self.__close_btn_padding
-        self.__close_btn.y = self.y+self.__close_btn_padding
+        self.__close_btn.x = self.x + self.__close_btn_padding
+        self.__close_btn.y = self.y + self.__close_btn_padding
         self.__close_btn.width = self.__close_btn_radius
         self.__close_btn.height = self.__close_btn_radius
 
         self.__title.x = self.x + self.width / 2
-        self.__title.y = self.y + self.height/2
+        self.__title.y = self.y + self.height / 2
 
         if self.__widget:
-            self.__widget.configure(bd=1, relief='solid', width=self.width-2)
+            self.__widget.configure(bd=1, relief='solid', width=self.width - 2)
             self.__widget_draw.x = self.x
             self.__widget_draw.y = self.y + self.height
 
