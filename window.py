@@ -1,17 +1,22 @@
 # Boring
 
 import sys
-PYTHON_3 = sys.version_info.major == 3
-if PYTHON_3:
-    import tkinter as Tkinter
-    from tkinter import font as tkFont
-    from tkinter import colorchooser as tkColorChooser
-else:
-    import Tkinter
-    import tkFont
-    import tkColorChooser
 
-BG_COLOR = '#ededed'
+
+def import_tkinter():
+    """Import the correct version of Tkinter."""
+    try:
+        import Tkinter as tk
+    except ImportError:
+        try:
+            import tkinter as tk
+        except ImportError:
+            print('You must have Tkinter installed')
+            sys.exit(-1)
+    return tk
+
+tk = import_tkinter()
+
 
 class GenericWindow(object):
     '''
@@ -57,13 +62,13 @@ class GenericWindow(object):
         ]
         '''
         if not hasattr(self, '__menu'):
-            self.__menu = Tkinter.Menu(
+            self.__menu = tk.Menu(
                 self,
                 relief='flat'
             )
             self.__menus = {}
         for menu in _list:
-            self.__menus[menu[0]] = Tkinter.Menu(
+            self.__menus[menu[0]] = tk.Menu(
                 self.__menu,
                 tearoff=0,
                 relief='flat'
@@ -72,7 +77,7 @@ class GenericWindow(object):
                 self.__menus[menu[0]].add_command(
                     label=item['title'],
                     command=item['command'],
-                    underline=0, # TODO: auto
+                    underline=0,  # TODO: auto
                     accelerator=item.get('shortcut', None)
                 )
                 # TODO: error
@@ -85,20 +90,22 @@ class GenericWindow(object):
             self.__menu.add_cascade(
                 label=menu[0],
                 menu=self.__menus[menu[0]],
-                underline=0 # TODO: identificar a letra automaticamente
+                underline=0  # TODO: identificar a letra automaticamente
             )
         self.config(
             menu=self.__menu
         )
 
-class SubWindow(Tkinter.Toplevel, GenericWindow):
+
+class SubWindow(tk.Toplevel, GenericWindow):
     def __init__(self, *args, **kws):
-        Tkinter.Toplevel.__init__(self, *args, **kws)
+        tk.Toplevel.__init__(self, *args, **kws)
         GenericWindow.__init__(self)
 
-class Window(Tkinter.Tk, GenericWindow):
+
+class Window(tk.Tk, GenericWindow):
     def __init__(self, title='', bg='#ededed'):
-        Tkinter.Tk.__init__(self)
+        tk.Tk.__init__(self)
         GenericWindow.__init__(self)
         self.caption = title
         self.config(
@@ -106,4 +113,27 @@ class Window(Tkinter.Tk, GenericWindow):
         )
 
     def enable_escape(self):
-        self.bind('<Escape>', lambda *args, **kws : self.destroy(), '+')
+        self.bind('<Escape>', lambda *args, **kws: self.destroy(), '+')
+
+
+if __name__ == '__main__':
+    top = Window(title='Enable escape')
+    top.enable_escape()
+
+    def _handler(event=None):
+        print('handler called')
+
+    top.add_menu(
+        [
+            [
+                'File', [
+                    {
+                        'title': 'Open Project',
+                        'command': _handler,
+                        'shortcut': 'Control-o'
+                    }
+                ]
+            ]
+        ]
+    )
+    top.mainloop()
