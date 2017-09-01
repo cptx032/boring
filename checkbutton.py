@@ -1,116 +1,8 @@
 # coding: utf-8
 
+import cbthemes
 import copy
-import draw
 import packer
-
-CHECK_MARK = u'\u2713'
-
-CHECKBOX_DEFAULT_THEME = {
-    'bg': {
-        'def': {
-            'class': draw.RoundedRectangleDraw,
-            'x': 0,
-            'y': 0,
-            'width': 1.0,
-            'height': 1.0
-        },
-        'states': {
-            'checked': {
-                'normal': {
-                    'fill': '#5cb85c',
-                    'width': 0,
-                    'radius': [0] * 4,
-                },
-                'over': {
-                    'fill': '#4ca84c',
-                    'width': 0,
-                    'radius': [0] * 4,
-                },
-                'click': {
-                    'fill': '#3c983c',
-                    'width': 0,
-                    'radius': [0] * 4,
-                }
-            },
-            'unchecked': {
-                'normal': {
-                    'fill': '#5cb85c',
-                    'width': 0,
-                    'radius': [0] * 4,
-                },
-                'over': {
-                    'fill': '#4ca84c',
-                    'width': 0,
-                    'radius': [0] * 4,
-                },
-                'click': {
-                    'fill': '#3c983c',
-                    'width': 0,
-                    'radius': [0] * 4,
-                }
-            },
-            'disabled': {
-                'normal': {
-                    'fill': '#dedede',
-                },
-                'over': {
-                    'fill': '#dcdcdc'
-                },
-                'click': {
-                    'fill': '#dadada'
-                }
-            }
-        }
-    },
-    'fg': {
-        'def': {
-            'class': draw.TextDraw,
-            'x': 0.5,
-            'y': 0.5,
-            'anchor': 'center'
-        },
-        'states': {
-            'checked': {
-                'normal': {
-                    'text': CHECK_MARK,
-                    'fill': '#ffffff',
-                    'font': ('helvetica', 12, 'bold'),
-                },
-                'over': {
-                    'text': CHECK_MARK,
-                },
-                'click': {
-                    'text': CHECK_MARK,
-                }
-            },
-            'unchecked': {
-                'normal': {
-                    'text': '',
-                    'fill': '#ffffff',
-                    'font': ('helvetica', 12, 'bold'),
-                },
-                'over': {
-                    'text': '',
-                },
-                'click': {
-                    'text': '',
-                }
-            },
-            'disabled': {
-                'normal': {
-                    'fill': '#aaa',
-                },
-                'over': {
-                    'fill': '#aaa',
-                },
-                'click': {
-                    'fill': '#aaa',
-                },
-            }
-        }
-    }
-}
 
 
 class StatePacker(packer.Packer):
@@ -151,10 +43,12 @@ class SimpleCheckbox(StatePacker):
             bd=0, highlightthickness=0
         )
         if 'elems' not in kwargs:
-            kwargs['elems'] = copy.deepcopy(CHECKBOX_DEFAULT_THEME)
+            kwargs['elems'] = copy.deepcopy(cbthemes.SQUARE_WHITE_THEME)
         StatePacker.__init__(self, *args, **kwargs)
         self.bind('<ButtonRelease-1>', self.check_handler, '+')
         self.bind('<Configure>', self.__update, '+')
+
+        self.hide_bg()
 
     def __update(self, event=None):
         if self['state'] == 'disabled':
@@ -182,9 +76,13 @@ if __name__ == '__main__':
     import window
     top = window.Window(title='SimpleCheckbox')
     top.enable_escape()
-    top.geometry('100x100')
-    c = SimpleCheckbox(top).pack(side='left')
+    top.geometry('200x100')
+    c = SimpleCheckbox(top).pack(side='left', pady=5, padx=5)
     c['state'] = 'disabled'
     c.check()
-    SimpleCheckbox(top).pack(side='left')
+    SimpleCheckbox(top).pack(side='left', pady=5, padx=5)
+    SimpleCheckbox(top, elems=cbthemes.SQUARE_GREEN_THEME).pack(
+        side='left', pady=5, padx=5)
+    SimpleCheckbox(top, elems=cbthemes.CIRCLE_WHITE_THEME).pack(
+        side='left', pady=5, padx=5)
     top.mainloop()

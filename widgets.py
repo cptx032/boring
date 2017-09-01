@@ -13,6 +13,13 @@ class BaseWidget(object):
         super(BaseWidget, self).pack(*args, **kwargs)
         return self
 
+    def hide_bg(self):
+        self.__copy_bg()
+        self.master.bind('<Configure>', self.__copy_bg, '+')
+
+    def __copy_bg(self, event=None):
+        self['bg'] = self.master['bg']
+
 
 class Frame(window.tk.Frame, object):
     def __init__(self, *args, **kwargs):
@@ -34,18 +41,6 @@ class Frame(window.tk.Frame, object):
     @height.setter
     def height(self, value):
         self['height'] = value
-
-
-class _SameBackgroundWidget(BaseWidget):
-    def __init__(self, *args, **kwargs):
-        BaseWidget.__init__(self)
-        _has_bg_key = False
-        if 'bg' in kwargs or 'background' in kwargs:
-            _has_bg_key = True
-        if not _has_bg_key:
-            self.configure(
-                bg=self.master['bg']
-            )
 
 
 class ExtendedCanvas(BaseWidget, window.tk.Canvas):
@@ -144,10 +139,10 @@ class ExtendedCanvas(BaseWidget, window.tk.Canvas):
         return self.create_polygon(*pts, **kwargs)
 
 
-class Label(_SameBackgroundWidget, window.tk.Label):
+class Label(window.tk.Label):
     def __init__(self, *args, **kwargs):
         window.tk.Label.__init__(self, *args, **kwargs)
-        _SameBackgroundWidget.__init__(self, *args, **kwargs)
+        self.hide_bg()
 
     @property
     def text(self):

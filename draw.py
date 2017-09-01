@@ -427,7 +427,7 @@ class RectangleDraw(BaseCanvasDraw):
 class OvalDraw(RectangleDraw):
 
     def get_drawing_function(self):
-        return self.create_oval
+        return self.canvas.create_oval
 
     @property
     def radius(self):
