@@ -21,10 +21,11 @@ class BaseWidget(object):
         self['bg'] = self.master['bg']
 
 
-class Frame(window.tk.Frame, object):
+class Frame(BaseWidget, window.tk.Frame):
     def __init__(self, *args, **kwargs):
         window.tk.Frame.__init__(self, *args, **kwargs)
-        self['bg'] = self.master['bg']
+        BaseWidget.__init__(self)
+        self.hide_bg()
 
     @property
     def width(self):
@@ -139,9 +140,10 @@ class ExtendedCanvas(BaseWidget, window.tk.Canvas):
         return self.create_polygon(*pts, **kwargs)
 
 
-class Label(window.tk.Label):
+class Label(BaseWidget, window.tk.Label):
     def __init__(self, *args, **kwargs):
         window.tk.Label.__init__(self, *args, **kwargs)
+        BaseWidget.__init__(self)
         self.hide_bg()
 
     @property

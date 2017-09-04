@@ -65,6 +65,29 @@ class Packer(widgets.ExtendedCanvas):
             _items.append(self.add_item(items))
         return _items
 
+
+class StatePacker(Packer):
+    def __init__(self, *args, **kwargs):
+        self.actual_state = kwargs.pop('state')
+        self.elems = kwargs.pop('elems')
+        Packer.__init__(self, *args, **kwargs)
+        self.__init_states()
+
+    def __init_states(self):
+        for key in self.elems.keys():
+            definition = self.elems.get(key).get('def')
+            definition['name'] = key
+            definition['theme'] = self.elems.get(key).get(
+                'states').get(self.actual_state)
+            self.add_item(definition)
+
+    def switch_state(self, state):
+        self.actual_state = state
+        for key in self.items.keys():
+            self.items[key]['settings']['theme'] = self.elems.get(
+                key).get('states').get(self.actual_state)
+        self.update_items('over')
+
 if __name__ == '__main__':
     import draw
     import window
