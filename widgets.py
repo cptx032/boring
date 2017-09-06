@@ -155,6 +155,19 @@ class Label(BaseWidget, window.tk.Label):
         self['text'] = value
 
 
+class HorizontalLine(ExtendedCanvas):
+    def __init__(self, master, **kws):
+        ExtendedCanvas.__init__(
+            self,
+            master,
+            height=1,
+            relief='flat',
+            bd=0,
+            highlightthickness=0,
+            **kws
+        )
+
+
 if __name__ == '__main__':
     import window
     top = window.Window('rounded rectangle')
@@ -1025,19 +1038,6 @@ if __name__ == '__main__':
 
 #         self.__entry.configure(
 #             bd=0, highlightthickness=0
-#         )
-
-
-# class HorizontalLine(ExtendedCanvas):
-#     def __init__(self, master, **kws):
-#         ExtendedCanvas.__init__(
-#             self,
-#             master,
-#             height=1,
-#             relief='flat',
-#             bd=0,
-#             highlightthickness=0,
-#             **kws
 #         )
 
 
