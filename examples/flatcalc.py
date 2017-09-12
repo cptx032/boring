@@ -21,7 +21,7 @@ entry = tk.Entry(
     bd=0, highlightthickness=0,
     bg='#47565a', fg='#ddd',
     justify='right')
-entry.grid(pady=20, padx=20)
+entry.grid(pady=40, padx=20)
 entry.insert(0, '3.1415')
 
 buttons = [
