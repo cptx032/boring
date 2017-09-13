@@ -22,6 +22,9 @@ class SimpleButton(packer.StatePacker):
         if 'elems' not in kwargs:
             kwargs['elems'] = copy.deepcopy(buttonthemes.SHADOWED_WHITE)
         packer.StatePacker.__init__(self, *args, **kwargs)
+        self.set_text(text)
+
+    def set_text(self, text):
         self.items.get('text').get('draw').text = text
 
 if __name__ == '__main__':

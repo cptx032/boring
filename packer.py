@@ -88,6 +88,12 @@ class StatePacker(Packer):
                 key).get('states').get(self.actual_state)
         self.update_items('over')
 
+    def change_elems(self, elems, state=None):
+        self.elems = elems
+        if state:
+            self.actual_state = state
+        self.switch_state(self.actual_state)
+
 if __name__ == '__main__':
     import draw
     import window
