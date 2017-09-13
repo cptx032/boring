@@ -1,5 +1,6 @@
 # boring
 another ui library for tkinter
 
-![Alt text](screenshots/checkbuttons.png)
-![Alt text](screenshots/buttons.png)
+![Checkbuttons](screenshots/checkbuttons.png)
+![Buttons](screenshots/buttons.png)
+![Flat Calculator Design](screenshots/flat-calc-design.png)
