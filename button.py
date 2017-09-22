@@ -27,6 +27,10 @@ class SimpleButton(packer.StatePacker):
     def set_text(self, text):
         self.items.get('text').get('draw').text = text
 
+    def get_text(self):
+        return self.items.get('text').get('draw').text
+
+
 if __name__ == '__main__':
     import window
     from widgets import Label, Frame

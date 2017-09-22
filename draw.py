@@ -213,7 +213,7 @@ class TextDraw(BaseCanvasDraw):
 
     @text.setter
     def text(self, value):
-        self.configure(text=unicode(value))
+        self.configure(text=value)
 
     @property
     def x(self):
