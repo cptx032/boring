@@ -43,6 +43,46 @@ LIGHT_THEME['bg'] = {
     }
 }
 
+LIGHT_THEME['left_shadow'] = {
+    'def': {
+        'class': draw.RectangleDraw,
+        'x': 0,
+        'y': 0,
+        'width': 0.1,
+        'height': 1.0
+    },
+    'states': {
+        'normal': {
+            'normal': {
+                'fill': '#eee',
+                'width': 0
+            },
+            'over': {
+                'fill': '#ddd',
+                'width': 0
+            },
+            'click': {
+                'fill': '#ccc',
+                'width': 0
+            }
+        },
+        'active': {
+            'normal': {
+                'fill': '#999',
+                'width': 0
+            },
+            'over': {
+                'fill': '#888',
+                'width': 0
+            },
+            'click': {
+                'fill': '#777',
+                'width': 0
+            },
+        }
+    }
+}
+
 LIGHT_THEME['text'] = {
     'def': {
         'class': draw.TextDraw,
