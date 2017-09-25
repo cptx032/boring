@@ -1,5 +1,6 @@
 # coding: utf-8
 import collections
+import copy
 import packer
 import widgets
 import tabthemes
@@ -11,18 +12,17 @@ class SimpleTabButton(packer.StatePacker):
     DISABLED = 'disabled'
 
     def __init__(self, *args, **kwargs):
-        kwargs['elems'] = tabthemes.LIGHT_THEME
-        kwargs['state'] = 'active'
         # as opções são: text, icon
         _text = kwargs.pop('text', u'')
 
-        kwargs['bd'] = 0
-        kwargs['highlightthickness'] = 0
+        kwargs.setdefault('cursor', 'hand1')
+        kwargs.setdefault('highlightthickness', 0)
+        kwargs.setdefault('bd', 0)
+        kwargs.setdefault('width', 100)
+        kwargs.setdefault('height', 40)
+        kwargs.setdefault('state', 'normal')
+        kwargs.setdefault('elems', copy.deepcopy(tabthemes.LIGHT_THEME))
 
-        if 'width' not in kwargs:
-            kwargs['width'] = 100
-        if 'height' not in kwargs:
-            kwargs['height'] = 40
         packer.StatePacker.__init__(self, *args, **kwargs)
         self.set_text(_text)
 
@@ -59,6 +59,10 @@ class Tab(widgets.Frame):
         # se já existirem outras abas é preciso definir se vai
         # ser ativada ou não a partir da kwarg "view:True/False"
         tabbutton = self.tab_button_class(self.__tabs_frame, **kwargs)
+        tabbutton.bind(
+            '<ButtonRelease-1>',
+            lambda evt: self.__view_tab_handler(evt, name),
+            '+')
         content_frame = widgets.Frame(self.__content_frame)
         content = content_func(content_frame)
         self.tabs[name] = dict(
@@ -76,16 +80,20 @@ class Tab(widgets.Frame):
             kw['column'] = 0
         tabbutton.grid(**kw)
 
+    def __view_tab_handler(self, event, name):
+        u"""Called when the tabbutton is clicked."""
+        self.view_tab(name)
+
     def view_tab(self, name):
         for i in self.tabs:
-            self.tabs[i]['content_frame'].grid_forget()
-        self.tabs[name]['content_frame'].grid()
-
-    # deve-se criar uma funcao que recebe um parent e todos os
-    # elementos devem ser dispostos dentro desse parent
-    # fixme: remover isso
-    def merged_content(self, master):
-        pass
+            self.tabs[i]['tabbutton'].switch_state('normal')
+            self.tabs[i]['tabbutton'].update_items('normal')
+            self.tabs[i]['content_frame'].pack_forget()
+        self.tabs[name]['content_frame'].pack(
+            expand='yes',
+            fill='both',
+            anchor='nw')
+        self.tabs[name]['tabbutton'].switch_state('active')
 
     def get_orientation(self):
         return self.__orientation
@@ -116,15 +124,28 @@ if __name__ == '__main__':
         return button.SimpleButton(
             master, text='MERGEG').grid(pady=15, padx=15)
 
+    def wiki_content(master):
+        fr = widgets.Frame(master).grid(sticky='nw')
+        widgets.Label(
+            fr,
+            text=u'Wiki',
+            font=('TkDefaultFont', 15),
+            fg='#444').grid(sticky='nw', pady=15, padx=15)
+        widgets.HorizontalLine(
+            fr,
+            width=400).grid()
+
+        return fr
+
     top = window.Window()
     top.enable_escape()
     top['bg'] = '#fafafa'
-    tab = Tab(top).grid()
-    tab.add_tab('code', conteudo, text=u'Code')
-    tab.add_tab('issues', conteudo2, text=u'Issues')
-    tab.add_tab('PR', conteudo2, text=u'Pull Requests')
-    tab.add_tab('wiki', conteudo2, text=u'Wiki')
-    tab.add_tab('settings', conteudo2, text=u'Settings')
+    tab = Tab(top, orientation=Tab.VERTICAL).grid()
+    tab.add_tab('code', conteudo, text=u'Code', width=150)
+    tab.add_tab('issues', conteudo2, text=u'Issues', width=150)
+    tab.add_tab('PR', conteudo2, text=u'Pull Requests', width=150)
+    tab.add_tab('wiki', wiki_content, text=u'Wiki', width=150)
+    tab.add_tab('settings', conteudo2, text=u'Settings', width=150)
     tab.view_tab('wiki')
     top.mainloop()
 

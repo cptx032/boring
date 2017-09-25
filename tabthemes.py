@@ -12,45 +12,33 @@ LIGHT_THEME['bg'] = {
         'height': 1.0
     },
     'states': {
-        'active': {
+        'normal': {
             'normal': {
-                'fill': '#ffffff',
+                'fill': '#eee',
                 'width': 0
             },
             'over': {
-                'fill': '#ffffff',
+                'fill': '#ddd',
                 'width': 0
             },
             'click': {
-                'fill': '#ffffff',
+                'fill': '#ccc',
                 'width': 0
             }
-        }
-    }
-}
-
-LIGHT_THEME['bottom_shadow'] = {
-    'def': {
-        'class': draw.RectangleDraw,
-        'x': 0,
-        'y': 0.95,
-        'width': 1.0,
-        'height': 0.05
-    },
-    'states': {
+        },
         'active': {
             'normal': {
-                'fill': '#AAA',
+                'fill': '#c5c5c5',
                 'width': 0
             },
             'over': {
-                'fill': '#CCC',
+                'fill': '#dadada',
                 'width': 0
             },
             'click': {
-                'fill': '#555',
+                'fill': '#cacaca',
                 'width': 0
-            }
+            },
         }
     }
 }
@@ -58,22 +46,42 @@ LIGHT_THEME['bottom_shadow'] = {
 LIGHT_THEME['text'] = {
     'def': {
         'class': draw.TextDraw,
-        'x': 0.5,
-        'y': 0.5
+        'x': 0.2,
+        'y': 0.5,
     },
     'states': {
-        'active': {
+        'normal': {
             'normal': {
-                'fill': '#000',
-                'width': 0
+                'fill': '#333',
+                'width': 0,
+                'anchor': 'w'
             },
             'over': {
-                'fill': '#000',
-                'width': 0
+                'fill': '#333',
+                'width': 0,
+                'justify': 'left'
             },
             'click': {
-                'fill': '#000',
-                'width': 0
+                'fill': '#333',
+                'width': 0,
+                'justify': 'left'
+            }
+        },
+        'active': {
+            'normal': {
+                'fill': '#333',
+                'width': 0,
+                'anchor': 'w'
+            },
+            'over': {
+                'fill': '#333',
+                'width': 0,
+                'justify': 'left'
+            },
+            'click': {
+                'fill': '#333',
+                'width': 0,
+                'justify': 'left'
             }
         }
     }
