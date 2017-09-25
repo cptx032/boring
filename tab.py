@@ -54,10 +54,18 @@ class Tab(widgets.Frame):
         self.set_orientation(self.get_orientation())
 
     def add_tab(self, name, content_func, **kwargs):
-        # fixme: ao adicionar uma aba, se não houver nenhuma
-        # ela deve ser ativada
-        # se já existirem outras abas é preciso definir se vai
-        # ser ativada ou não a partir da kwarg "view:True/False"
+        u"""Add a new tab.
+
+        Params:
+            name: the ID of tab. Can be anything but is preferable that
+                it be a string
+            content_func: a function that returns only one widget to be
+                showed when user active a tab
+            view_tab: a boolean indicating if that tab that is being added
+                should be active or not. This option will be ignored if tab
+                container hasnt any tab (is this case that tab will be activated).
+        """
+        _view_tab = kwargs.pop('view_tab', False)
         tabbutton = self.tab_button_class(self.__tabs_frame, **kwargs)
         tabbutton.bind(
             '<ButtonRelease-1>',
@@ -80,11 +88,20 @@ class Tab(widgets.Frame):
             kw['column'] = 0
         tabbutton.grid(**kw)
 
+        # if is the first tag being added
+        if len(self.tabs) == 1 or _view_tab:
+            self.view_tab(name)
+
     def __view_tab_handler(self, event, name):
         u"""Called when the tabbutton is clicked."""
         self.view_tab(name)
 
     def view_tab(self, name):
+        u"""Switch to a tab.
+
+        Params:
+            name: the ID of tab
+        """
         for i in self.tabs:
             self.tabs[i]['tabbutton'].switch_state('normal')
             self.tabs[i]['tabbutton'].update_items('normal')
@@ -117,39 +134,74 @@ class Tab(widgets.Frame):
 
 if __name__ == '__main__':
     import window
-    import button
 
-    def conteudo(master):
-        return button.SimpleButton(master, text='Open').grid()
+    def _gen_content(title):
+        def _get_content(master):
+            fr = widgets.Frame(master).grid(sticky='nw')
+            widgets.Label(
+                fr,
+                text=title,
+                font=('TkDefaultFont', 15),
+                fg='#444').grid(sticky='nw', pady=15, padx=15)
+            widgets.HorizontalLine(
+                fr,
+                width=500).grid()
 
-    def conteudo2(master):
-        return button.SimpleButton(
-            master, text='MERGEG').grid(pady=15, padx=15)
+            return fr
 
-    def wiki_content(master):
-        fr = widgets.Frame(master).grid(sticky='nw')
-        widgets.Label(
-            fr,
-            text=u'Wiki',
-            font=('TkDefaultFont', 15),
-            fg='#444').grid(sticky='nw', pady=15, padx=15)
-        widgets.HorizontalLine(
-            fr,
-            width=400).grid()
-
-        return fr
+        return _get_content
 
     top = window.Window()
+    top.resizable(0, 0)
     top.enable_escape()
     top['bg'] = '#fafafa'
     tab = Tab(top, orientation=Tab.VERTICAL).grid()
-    tab.add_tab('code', conteudo, text=u'Code', width=150)
-    tab.add_tab('issues', conteudo2, text=u'Issues', width=150)
-    tab.add_tab('PR', conteudo2, text=u'Pull Requests', width=150)
-    tab.add_tab('wiki', wiki_content, text=u'Wiki', width=150)
-    tab.add_tab('settings', conteudo2, text=u'Settings', width=150)
-    tab.view_tab('wiki')
+    tab.add_tab(
+        'code',
+        _gen_content(u'Code'),
+        text=u'Code',
+        width=150)
+    tab.add_tab(
+        'issues',
+        _gen_content(u'Issues'),
+        text=u'Issues',
+        width=150)
+    tab.add_tab(
+        'PR',
+        _gen_content(u'Pull requests'),
+        text=u'Pull Requests',
+        width=150)
+    tab.add_tab(
+        'wiki',
+        _gen_content(u'Wiki'),
+        text=u'Wiki',
+        width=150)
+    tab.add_tab(
+        'settings',
+        _gen_content(u'Settings'),
+        text=u'Settings',
+        width=150)
+    tab.add_tab(
+        'overview',
+        _gen_content(u'Overview'),
+        text=u'Overview',
+        width=150)
+    tab.add_tab(
+        'ssh',
+        _gen_content(u'SSH Keys'),
+        text=u'SSH Keys',
+        width=150)
+    tab.add_tab(
+        'miestones',
+        _gen_content(u'Milestones'),
+        text=u'Milestones',
+        width=150)
+    tab.add_tab(
+        'snippets',
+        _gen_content(u'Snippets'),
+        text=u'Snippets',
+        width=150)
+    tab.view_tab('issues')
     top.mainloop()
 
-# fixme: o conteudo deve ocupar todo o espaço disponível
 # fixme: o tabbutton padrão deve permitir aceitar ícones e texto
