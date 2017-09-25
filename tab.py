@@ -71,7 +71,7 @@ class Tab(widgets.Frame):
             content_frame=content_frame,
             content=content)
 
-        kw = dict()
+        kw = dict(sticky='nw')
         if self.get_orientation() == Tab.HORIZONTAL:
             kw['row'] = 0
             kw['column'] = len(self.tabs.keys())
@@ -96,6 +96,7 @@ class Tab(widgets.Frame):
         self.tabs[name]['tabbutton'].switch_state('active')
 
     def get_orientation(self):
+        u"""Return 'horizontal' or 'vertical'."""
         return self.__orientation
 
     def set_orientation(self, orientation):
@@ -104,13 +105,14 @@ class Tab(widgets.Frame):
         self.update_orientation()
 
     def update_orientation(self):
-        self.__tabs_frame.grid_forget()
-        self.__content_frame.grid_forget()
-        self.__tabs_frame.grid(row=0, column=0)
+        self.__tabs_frame.pack_forget()
+        self.__content_frame.pack_forget()
         if self.__orientation == Tab.VERTICAL:
-            self.__content_frame.grid(row=0, column=1)
+            self.__tabs_frame.pack(side='left')
+            self.__content_frame.pack(expand='yes', fill='both')
         elif self.__orientation == Tab.HORIZONTAL:
-            self.__content_frame.grid(row=1, column=0)
+            self.__tabs_frame.pack(side='top')
+            self.__content_frame.pack(expand='yes', fill='both')
 
 
 if __name__ == '__main__':
