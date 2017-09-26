@@ -126,3 +126,30 @@ LIGHT_THEME['text'] = {
         }
     }
 }
+
+LIGHT_THEME['icon'] = {
+    'def': {
+        'class': draw.ImageDraw,
+        'x': 0.9,
+        'y': 0.5,
+        'anchor': 'e'
+    },
+    'states': {
+        'normal': {
+            'normal': {
+            },
+            'over': {
+            },
+            'click': {
+            }
+        },
+        'active': {
+            'normal': {
+            },
+            'over': {
+            },
+            'click': {
+            },
+        }
+    }
+}

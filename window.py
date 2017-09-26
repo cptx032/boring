@@ -18,6 +18,14 @@ def import_tkinter():
 tk = import_tkinter()
 
 
+def get_photo_class():
+    try:
+        from PIL import ImageTk
+        return ImageTk.PhotoImage
+    except ImportError:
+        return tk.PhotoImage
+
+
 class GenericWindow(object):
     '''
     Generic for Tk and Toplevel

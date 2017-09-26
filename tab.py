@@ -14,6 +14,7 @@ class SimpleTabButton(packer.StatePacker):
     def __init__(self, *args, **kwargs):
         # as opções são: text, icon
         _text = kwargs.pop('text', u'')
+        _icon = kwargs.pop('icon', None)
 
         kwargs.setdefault('cursor', 'hand1')
         kwargs.setdefault('highlightthickness', 0)
@@ -25,12 +26,19 @@ class SimpleTabButton(packer.StatePacker):
 
         packer.StatePacker.__init__(self, *args, **kwargs)
         self.set_text(_text)
+        self.set_icon(_icon)
 
     def set_text(self, text):
         self.items.get('text').get('draw').text = text
 
     def get_text(self):
         return self.items.get('text').get('draw').text
+
+    def set_icon(self, icon):
+        self.items.get('icon').get('draw').image = icon
+
+    def get_icon(self):
+        return self.items.get('icon').get('draw').image
 
 
 class Tab(widgets.Frame):
@@ -145,14 +153,14 @@ if __name__ == '__main__':
                 fg='#444').grid(sticky='nw', pady=15, padx=15)
             widgets.HorizontalLine(
                 fr,
-                width=500).grid()
+                width=500).grid(sticky='we')
 
             return fr
 
         return _get_content
 
     top = window.Window()
-    top.resizable(0, 0)
+    # top.resizable(0, 0)
     top.enable_escape()
     top['bg'] = '#fafafa'
     tab = Tab(top, orientation=Tab.VERTICAL).grid()
@@ -176,10 +184,17 @@ if __name__ == '__main__':
         _gen_content(u'Wiki'),
         text=u'Wiki',
         width=150)
+    _icon = None
+    # this will fail if you havent PIL
+    try:
+        _icon = window.get_photo_class()(file='examples/settings.png')
+    except:
+        pass
     tab.add_tab(
         'settings',
         _gen_content(u'Settings'),
         text=u'Settings',
+        icon=_icon,
         width=150)
     tab.add_tab(
         'overview',
@@ -192,7 +207,7 @@ if __name__ == '__main__':
         text=u'SSH Keys',
         width=150)
     tab.add_tab(
-        'miestones',
+        'milestones',
         _gen_content(u'Milestones'),
         text=u'Milestones',
         width=150)

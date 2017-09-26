@@ -1,13 +1,6 @@
 # coding: utf-8
 from window import tk
 
-PhotoImage = tk.PhotoImage
-try:
-    from PIL import ImageTk
-    PhotoImage = ImageTk.PhotoImage
-except:
-    pass
-
 
 class BaseCanvasDraw(object):
     def __init__(self, canvas, coords, **kws):
@@ -46,7 +39,7 @@ class BaseCanvasDraw(object):
         '''
         for i in range(0, len(self.coords), 2):
             self.coords[i] += x
-            self.coords[i+1] += y
+            self.coords[i + 1] += y
         self.update()
 
     def reset(self):
@@ -300,15 +293,11 @@ class WidgetDraw(BaseCanvasDraw):
 
 
 class ImageDraw(BaseCanvasDraw):
-    def __init__(self, canvas, x, y, image, **kws):
-        '''
-        image: can be string or a PhotoImage instance
-        '''
-        # fixme: verify types
+    def __init__(self, canvas, x, y, **kws):
         BaseCanvasDraw.__init__(
             self, canvas,
             [x, y],
-            image=PhotoImage(file=image) if type(image) in (str, unicode) else image, **kws)
+            **kws)
 
     def get_drawing_function(self):
         return self.canvas.create_image
@@ -443,7 +432,7 @@ class OvalDraw(RectangleDraw):
     # TODO: implements to set the center
     @property
     def center_x(self):
-        return self.x + (self.width/2)
+        return self.x + (self.width / 2)
 
     @property
     def center_y(self):
@@ -619,12 +608,13 @@ if __name__ == '__main__':
     top = window.Window()
     ca = widgets.ExtendedCanvas(top)
     ca.grid()
-    v = ArcDraw(ca, [10,10,110,110])
+    v = ArcDraw(ca, [10, 10, 110, 110])
     v.arcwidth = 2
     v.arcstyle = 'arc'
     v.outline = '#00aacc'
     v.startangle = 0
     v.endangle = 180
+
     def _T(*Args):
         v.startangle += 20
         # print 'pass heres'
