@@ -71,7 +71,8 @@ class Tab(widgets.Frame):
                 showed when user active a tab
             view_tab: a boolean indicating if that tab that is being added
                 should be active or not. This option will be ignored if tab
-                container hasnt any tab (is this case that tab will be activated).
+                container hasnt any tab (is this case that tab will be
+                activated).
         """
         _view_tab = kwargs.pop('view_tab', False)
         tabbutton = self.tab_button_class(self.__tabs_frame, **kwargs)
@@ -111,9 +112,10 @@ class Tab(widgets.Frame):
             name: the ID of tab
         """
         for i in self.tabs:
-            self.tabs[i]['tabbutton'].switch_state('normal')
-            self.tabs[i]['tabbutton'].update_items('normal')
-            self.tabs[i]['content_frame'].pack_forget()
+            if self.tabs[i]['tabbutton'].actual_state == 'active':
+                self.tabs[i]['tabbutton'].switch_state('normal')
+                self.tabs[i]['tabbutton'].update_items('normal')
+                self.tabs[i]['content_frame'].pack_forget()
         self.tabs[name]['content_frame'].pack(
             expand='yes',
             fill='both',
