@@ -1,5 +1,4 @@
 # coding: utf-8
-from window import tk
 
 
 class BaseCanvasDraw(object):
@@ -373,7 +372,7 @@ class RectangleDraw(BaseCanvasDraw):
 
     @x.setter
     def x(self, value):
-        self.coords = [value, self.y, value+self.width, self.y+self.height]
+        self.coords = [value, self.y, value + self.width, self.y + self.height]
         self.update()
 
     @property
@@ -382,7 +381,7 @@ class RectangleDraw(BaseCanvasDraw):
 
     @y.setter
     def y(self, value):
-        self.coords = [self.x, value, self.x+self.width, value+self.height]
+        self.coords = [self.x, value, self.x + self.width, value + self.height]
         self.update()
 
     @property
@@ -391,7 +390,7 @@ class RectangleDraw(BaseCanvasDraw):
 
     @width.setter
     def width(self, value):
-        self.coords = [self.x, self.y, self.x+value, self.y+self.height]
+        self.coords = [self.x, self.y, self.x + value, self.y + self.height]
         self.update()
 
     @property
@@ -464,7 +463,8 @@ class PolygonDraw(BaseCanvasDraw):
 
 
 class RoundedRectangleDraw(PolygonDraw):
-    def __init__(self, canvas, x, y, _width, height, radius=[2, 2, 2, 2], **kws):
+    def __init__(self, canvas, x, y, _width,
+                 height, radius=[2, 2, 2, 2], **kws):
         self.__coords = [x, y, x + _width, y + height]
         self.__radius = radius
         PolygonDraw.__init__(self, canvas, *self.__coords, **kws)
@@ -604,7 +604,7 @@ class RoundedRectangleDraw(PolygonDraw):
         PolygonDraw.configure(self, **kws)
 
 if __name__ == '__main__':
-    import window, widgets
+    from . import window, widgets
     top = window.Window()
     ca = widgets.ExtendedCanvas(top)
     ca.grid()

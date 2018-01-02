@@ -1,9 +1,11 @@
 # coding: utf-8
+
 import collections
 import copy
-import packer
-import widgets
-import tabthemes
+
+from . import packer
+from . import widgets
+from . import tabthemes
 
 
 class SimpleTabButton(packer.StatePacker):

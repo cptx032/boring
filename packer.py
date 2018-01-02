@@ -1,6 +1,8 @@
 # coding: utf-8
-import widgets
+
 import uuid
+
+from . import widgets
 
 
 class Packer(widgets.ExtendedCanvas):

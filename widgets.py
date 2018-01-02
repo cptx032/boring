@@ -1,7 +1,8 @@
 # coding: utf-8
 
-import window
 import math
+
+from . import window
 
 
 class BaseWidget(object):

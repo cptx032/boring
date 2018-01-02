@@ -1,6 +1,8 @@
 # coding: utf-8
+
 import collections
-import draw
+
+from . import draw
 
 LIGHT_THEME = collections.OrderedDict()
 LIGHT_THEME['bg'] = {
