@@ -1,6 +1,6 @@
 # coding: utf-8
 import collections
-import draw
+from boring import draw
 
 SHADOWED_WHITE = collections.OrderedDict()
 SHADOWED_WHITE['shadow'] = {
@@ -15,37 +15,46 @@ SHADOWED_WHITE['shadow'] = {
         'active': {
             'normal': {
                 'fill': '#0078e7',
+                'radius': [5, 5, 5, 5],
             },
             'over': {
                 'fill': '#0068d7',
+                'radius': [5, 5, 5, 5],
             },
             'click': {
                 'fill': '#0058c7',
+                'radius': [5, 5, 5, 5],
             },
         },
         'normal': {
             'normal': {
                 'fill': '#cccccc',
                 'width': 0,
+                'radius': [5, 5, 5, 5],
             },
             'over': {
                 'fill': '#d5d5d5',
                 'width': 0,
+                'radius': [5, 5, 5, 5],
             },
             'click': {
                 'fill': '#dadada',
                 'width': 0,
+                'radius': [5, 5, 5, 5],
             },
         },
         'disabled': {
             'normal': {
                 'fill': '#000000',
+                'radius': [5, 5, 5, 5],
             },
             'over': {
                 'fill': '#000000',
+                'radius': [5, 5, 5, 5],
             },
             'click': {
                 'fill': '#000000',
+                'radius': [5, 5, 5, 5],
             },
         },
     }
@@ -73,7 +82,7 @@ SHADOWED_WHITE['text'] = {
         },
         'normal': {
             'normal': {
-                'fill': '#333333',
+                'fill': '#333333'
             },
             'over': {
                 'fill': '#333333',
