@@ -604,7 +604,7 @@ class RoundedRectangleDraw(PolygonDraw):
         PolygonDraw.configure(self, **kws)
 
 if __name__ == '__main__':
-    from . import window, widgets
+    from boring import window, widgets
     top = window.Window()
     ca = widgets.ExtendedCanvas(top)
     ca.grid()

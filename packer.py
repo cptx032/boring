@@ -2,7 +2,7 @@
 
 import uuid
 
-from . import widgets
+from boring import widgets
 
 
 class Packer(widgets.ExtendedCanvas):

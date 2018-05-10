@@ -3,9 +3,9 @@
 import collections
 import copy
 
-from . import packer
-from . import widgets
-from . import tabthemes
+from boring import packer
+from boring import widgets
+from boring import tabthemes
 
 
 class SimpleTabButton(packer.StatePacker):

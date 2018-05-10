@@ -2,7 +2,7 @@
 
 import math
 
-from . import window
+from boring import window
 
 
 class BaseWidget(object):
