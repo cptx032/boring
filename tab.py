@@ -53,6 +53,8 @@ class Tab(widgets.Frame):
         self.tab_button_class = kwargs.pop('tab_button_class', SimpleTabButton)
         widgets.Frame.__init__(self, master)
 
+        self.no_content = kwargs.get('no_content', False)
+
         # the frame where is placed all tab buttons
         self.__tabs_frame = widgets.Frame(self)
         # the frame where is placed the content of each tab
@@ -83,7 +85,9 @@ class Tab(widgets.Frame):
             lambda evt: self.__view_tab_handler(evt, name),
             '+')
         content_frame = widgets.Frame(self.__content_frame)
-        content = content_func(content_frame)
+        content = None
+        if content_func:
+            content = content_func(content_frame)
         self.tabs[name] = dict(
             name=name,
             tabbutton=tabbutton,
@@ -138,10 +142,12 @@ class Tab(widgets.Frame):
         self.__content_frame.pack_forget()
         if self.__orientation == Tab.VERTICAL:
             self.__tabs_frame.pack(side='left')
-            self.__content_frame.pack(expand='yes', fill='both')
+            if not self.no_content:
+                self.__content_frame.pack(expand='yes', fill='both')
         elif self.__orientation == Tab.HORIZONTAL:
             self.__tabs_frame.pack(side='top')
-            self.__content_frame.pack(expand='yes', fill='both')
+            if not self.no_content:
+                self.__content_frame.pack(expand='yes', fill='both')
 
 
 if __name__ == '__main__':
