@@ -3,12 +3,33 @@
 
 class BaseCanvasDraw(object):
     def __init__(self, canvas, coords, **kws):
+        props = kws.pop('properties', [])
         self.canvas = canvas
         self.coords = coords
         self.style = kws
         # override this to Canvas.create_something
         # self.draw_func = None
         self.__index = self.generate_canvas_index()(*self.coords, **self.style)
+
+        for i in props:
+            setattr(
+                self.__class__,
+                i,
+                property(
+                    fget=self._get_fget_function(i),
+                    fset=self._get_fset_function(i)
+                )
+            )
+
+    def _get_fget_function(self, prop_name):
+        def _function(self):
+            return self.style.get(prop_name)
+        return _function
+
+    def _get_fset_function(self, prop_name):
+        def _function(self, value):
+            self.configure(**{prop_name: value})
+        return _function
 
     def generate_canvas_index(self):
         return self.get_drawing_function()
@@ -87,7 +108,9 @@ class LineDraw(BaseCanvasDraw):
 
 class ArcDraw(BaseCanvasDraw):
     def __init__(self, canvas, coords, **kws):
-        BaseCanvasDraw.__init__(self, canvas, coords, **kws)
+        properties = ['fill', 'outline']
+        BaseCanvasDraw.__init__(
+            self, canvas, coords, properties=properties, **kws)
 
     def get_drawing_function(self):
         return self.canvas.create_arc
@@ -171,22 +194,6 @@ class ArcDraw(BaseCanvasDraw):
     def endangle(self, value):
         self.configure(extent=value)
 
-    @property
-    def fill(self):
-        return self.style.get('fill')
-
-    @fill.setter
-    def fill(self, value):
-        self.configure(fill=value)
-
-    @property
-    def outline(self):
-        return self.style.get('outline')
-
-    @outline.setter
-    def outline(self, value):
-        self.configure(outline=value)
-
 
 class SimpleCurveDraw(BaseCanvasDraw):
     pass  # TODO
@@ -194,18 +201,15 @@ class SimpleCurveDraw(BaseCanvasDraw):
 
 class TextDraw(BaseCanvasDraw):
     def __init__(self, canvas, x, y, **kws):
-        BaseCanvasDraw.__init__(self, canvas, [x, y], **kws)
+        properties = ['fill', 'text', 'font']
+        BaseCanvasDraw.__init__(
+            self, canvas, [x, y],
+            properties=properties,
+            **kws
+        )
 
     def get_drawing_function(self):
         return self.canvas.create_text
-
-    @property
-    def text(self):
-        return self.style['text']
-
-    @text.setter
-    def text(self, value):
-        self.configure(text=value)
 
     @property
     def x(self):
@@ -234,30 +238,16 @@ class TextDraw(BaseCanvasDraw):
         self.coords = value
         self.update()
 
-    @property
-    def fill(self):
-        return self.style['fill']
-
-    @fill.setter
-    def fill(self, value):
-        self.configure(fill=value)
-
-    @property
-    def font(self):
-        return self.style['font']
-
-    @font.setter
-    def font(self, value):
-        self.configure(font=value)
-
 
 class WidgetDraw(BaseCanvasDraw):
     def __init__(self, canvas, x, y, widget, **kws):
+        properties = ['widget', ]
         BaseCanvasDraw.__init__(
             self,
             canvas,
             [x, y],
             window=widget,
+            properties=properties,
             **kws
         )
 
@@ -281,14 +271,6 @@ class WidgetDraw(BaseCanvasDraw):
     def y(self, value):
         self.coords[1] = value
         self.update()
-
-    @property
-    def widget(self):
-        return self.style['window']
-
-    @widget.setter
-    def widget(self, value):
-        self.configure(window=value)
 
 
 class ImageDraw(BaseCanvasDraw):
@@ -351,7 +333,13 @@ class RectangleDraw(BaseCanvasDraw):
         self.__coords = [x, y, x + _width, y + height]
         # when passing the coords to base the base will set
         # coords property to coords argument
-        BaseCanvasDraw.__init__(self, canvas, [x, y, _width, height], **kws)
+        properties = ['outline', 'fill']
+        BaseCanvasDraw.__init__(
+            self,
+            canvas,
+            [x, y, _width, height],
+            properties=properties,
+            **kws)
 
     def get_drawing_function(self):
         return self.canvas.create_rectangle
@@ -413,22 +401,6 @@ class RectangleDraw(BaseCanvasDraw):
         in_y = (y >= self.y) and (y <= (self.y + self.height))
         return in_x and in_y
 
-    @property
-    def fill(self):
-        return self.style.get('fill')
-
-    @fill.setter
-    def fill(self, value):
-        self.configure(fill=value)
-
-    @property
-    def outline(self):
-        return self.style.get('outline')
-
-    @outline.setter
-    def outline(self, value):
-        self.configure(outline=value)
-
 
 class OvalDraw(RectangleDraw):
 
@@ -466,18 +438,12 @@ class OvalDraw(RectangleDraw):
 
 class PolygonDraw(BaseCanvasDraw):
     def __init__(self, canvas, *coords, **kws):
-        BaseCanvasDraw.__init__(self, canvas, coords, **kws)
+        properties = ['fill', 'outline']
+        BaseCanvasDraw.__init__(
+            self, canvas, coords, properties=properties, **kws)
 
     def get_drawing_function(self):
         return self.canvas.create_polygon
-
-    @property
-    def fill(self):
-        return self.style['fill']
-
-    @fill.setter
-    def fill(self, value):
-        self.configure(fill=value)
 
 
 class RoundedRectangleDraw(PolygonDraw):
@@ -599,22 +565,6 @@ class RoundedRectangleDraw(PolygonDraw):
     def height(self, value):
         self.__coords[3] = self.__coords[1] + value
         self.update()
-
-    @property
-    def fill(self):
-        return self.style['fill']
-
-    @fill.setter
-    def fill(self, value):
-        self.configure(fill=value)
-
-    @property
-    def outline(self):
-        return self.style['outline']
-
-    @outline.setter
-    def outline(self, value):
-        self.configure(outline=value)
 
     def configure(self, **kws):
         if 'radius' in kws:
