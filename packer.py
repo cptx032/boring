@@ -11,7 +11,7 @@ class Packer(widgets.ExtendedCanvas):
     def __init__(self, *args, **kwargs):
         self.items = dict()
         self.update_on_resize = kwargs.pop('update_on_resize', False)
-        widgets.ExtendedCanvas.__init__(self, *args, **kwargs)
+        super(Packer, self).__init__(*args, **kwargs)
         self.bind('<Configure>', lambda e: self.update_items('normal'), '+')
         self.bind('<Button-1>', lambda e: self.update_items('click'), '+')
         self.bind(

@@ -349,7 +349,9 @@ class ImageDraw(BaseCanvasDraw):
 class RectangleDraw(BaseCanvasDraw):
     def __init__(self, canvas, x, y, _width, height, **kws):
         self.__coords = [x, y, x + _width, y + height]
-        BaseCanvasDraw.__init__(self, canvas, self.__coords, **kws)
+        # when passing the coords to base the base will set
+        # coords property to coords argument
+        BaseCanvasDraw.__init__(self, canvas, [x, y, _width, height], **kws)
 
     def get_drawing_function(self):
         return self.canvas.create_rectangle
@@ -410,6 +412,22 @@ class RectangleDraw(BaseCanvasDraw):
         in_x = (x >= self.x) and (x <= (self.x + self.width))
         in_y = (y >= self.y) and (y <= (self.y + self.height))
         return in_x and in_y
+
+    @property
+    def fill(self):
+        return self.style.get('fill')
+
+    @fill.setter
+    def fill(self, value):
+        self.configure(fill=value)
+
+    @property
+    def outline(self):
+        return self.style.get('outline')
+
+    @outline.setter
+    def outline(self, value):
+        self.configure(outline=value)
 
 
 class OvalDraw(RectangleDraw):
