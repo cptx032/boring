@@ -21,6 +21,22 @@ class BaseCanvasDraw(object):
                 )
             )
 
+    def configure_drag(self):
+        self._drag_initial_distance = [None, None]
+        self.bind('<B1-Motion>', self._drag_handler, '+')
+        self.bind('<ButtonRelease-1>', self._sound_drag_release_handler, '+')
+
+    def _sound_drag_release_handler(self, event):
+        self._drag_initial_distance = [None, None]
+
+    def _drag_handler(self, event):
+        if self._drag_initial_distance[0] is None:
+            self._drag_initial_distance[0] = event.x - self.x
+            self._drag_initial_distance[1] = event.y - self.y
+        else:
+            self.x = event.x - self._drag_initial_distance[0]
+            self.y = event.y - self._drag_initial_distance[1]
+
     def _get_fget_function(self, prop_name):
         def _function(self):
             return self.style.get(prop_name)
@@ -362,7 +378,7 @@ class RectangleDraw(BaseCanvasDraw):
 
     @x.setter
     def x(self, value):
-        self.coords = [value, self.y, value + self.width, self.y + self.height]
+        self.coords = [value, self.y, self.width, self.height]
         self.update()
 
     @property
@@ -371,7 +387,7 @@ class RectangleDraw(BaseCanvasDraw):
 
     @y.setter
     def y(self, value):
-        self.coords = [self.x, value, self.x + self.width, value + self.height]
+        self.coords = [self.x, value, self.width, self.height]
         self.update()
 
     @property
@@ -380,7 +396,7 @@ class RectangleDraw(BaseCanvasDraw):
 
     @width.setter
     def width(self, value):
-        self.coords = [self.x, self.y, self.x + value, self.y + self.height]
+        self.coords = [self.x, self.y, value, self.height]
         self.update()
 
     @property
@@ -389,7 +405,7 @@ class RectangleDraw(BaseCanvasDraw):
 
     @height.setter
     def height(self, value):
-        self.coords = [self.x, self.y, self.x + self.width, self.y + value]
+        self.coords = [self.x, self.y, self.width, value]
         self.update()
 
     def is_inside(self, x, y):
