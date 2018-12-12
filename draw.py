@@ -5,7 +5,7 @@ class BaseCanvasDraw(object):
     def __init__(self, canvas, coords, **kws):
         props = kws.pop('properties', [])
         self.canvas = canvas
-        self.coords = coords
+        self.__coords = coords
         self.style = kws
         # override this to Canvas.create_something
         # self.draw_func = None
@@ -21,15 +21,24 @@ class BaseCanvasDraw(object):
                 )
             )
 
-    def configure_drag(self):
+    @property
+    def coords(self):
+        return self.__coords
+
+    @coords.setter
+    def coords(self, value):
+        self.__coords = value
+        self.update()
+
+    def enable_drag(self):
         self._drag_initial_distance = [None, None]
-        self.bind('<B1-Motion>', self._drag_handler, '+')
+        self.bind('<B1-Motion>', self.drag_handler, '+')
         self.bind('<ButtonRelease-1>', self._sound_drag_release_handler, '+')
 
     def _sound_drag_release_handler(self, event):
         self._drag_initial_distance = [None, None]
 
-    def _drag_handler(self, event):
+    def drag_handler(self, event):
         if self._drag_initial_distance[0] is None:
             self._drag_initial_distance[0] = event.x - self.x
             self._drag_initial_distance[1] = event.y - self.y
@@ -62,6 +71,7 @@ class BaseCanvasDraw(object):
 
     def bind(self, *args, **kws):
         self.canvas.tag_bind(self.__index, *args, **kws)
+        return self
 
     def up(self):
         self.canvas.tag_raise(self.__index)
@@ -91,12 +101,6 @@ class BaseCanvasDraw(object):
 
 
 class LineDraw(BaseCanvasDraw):
-    def __init__(self, canvas, x1, y1, x2, y2, **kws):
-        BaseCanvasDraw.__init__(
-            self,
-            canvas, [x1, y1, x2, y2],
-            **kws
-        )
 
     def get_drawing_function(self):
         return self.canvas.create_line
@@ -254,6 +258,15 @@ class TextDraw(BaseCanvasDraw):
         self.coords = value
         self.update()
 
+    @property
+    def xy(self):
+        return self.x, self.y
+
+    @xy.setter
+    def xy(self, value):
+        self.coords = value
+        self.update()
+
 
 class WidgetDraw(BaseCanvasDraw):
     def __init__(self, canvas, x, y, widget, **kws):
@@ -371,6 +384,26 @@ class RectangleDraw(BaseCanvasDraw):
             coords[0] + coords[2],
             coords[1] + coords[3]
         ]
+
+    @property
+    def xy(self):
+        return [self.x, self.y]
+
+    @xy.setter
+    def xy(self, value):
+        self.coords = [
+            value[0], value[1],
+            self.width, self.height
+        ]
+        self.update()
+
+    @property
+    def size(self):
+        return [self.width, self.height]
+
+    @size.setter
+    def size(self, value):
+        self.width, self.height = value
 
     @property
     def x(self):

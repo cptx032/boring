@@ -38,9 +38,36 @@ class GenericWindow(object):
     def caption(self, value):
         self.title(value)
 
+    @property
+    def width(self):
+        return int(self.winfo_width())
+
+    @width.setter
+    def width(self, value):
+        self['width'] = value
+
+    @property
+    def height(self):
+        return int(self.winfo_height())
+
+    @height.setter
+    def height(self, value):
+        self['height'] = value
+
     def maximize(self):
         # TODO: Windows
         self.attributes('-zoomed', 1)
+
+    def enable_kmap(self):
+        self.kmap = dict()
+        self.bind('<Any-Key>', self._update_kmap_press, '+')
+        self.bind('<Any-KeyRelease>', self._update_kmap_release, '+')
+
+    def _update_kmap_press(self, event):
+        self.kmap[event.keysym] = True
+
+    def _update_kmap_release(self, event):
+        self.kmap[event.keysym] = False
 
     def center(self):
         '''
@@ -54,6 +81,10 @@ class GenericWindow(object):
         xpos = (sw / 2) - (ww / 2)
         ypos = (sh / 2) - (wh / 2)
         self.geometry('+%d+%d' % (xpos, ypos))
+
+    def enable_escape(self):
+        u"""Close the window when Escape Key is pressed."""
+        self.bind('<Escape>', lambda *args, **kws: self.destroy(), '+')
 
     def add_menu(self, _list):
         '''
@@ -119,9 +150,6 @@ class Window(tk.Tk, GenericWindow):
         self.config(
             bg=bg
         )
-
-    def enable_escape(self):
-        self.bind('<Escape>', lambda *args, **kws: self.destroy(), '+')
 
 
 if __name__ == '__main__':
