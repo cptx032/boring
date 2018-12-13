@@ -1,5 +1,8 @@
-from window import *
-import widgets
+# coding: utf-8
+
+from boring.window import SubWindow
+import boring.widgets as widgets
+
 
 class DefaultDialog(SubWindow):
     '''
@@ -46,7 +49,7 @@ class DefaultDialog(SubWindow):
         self.protocol('WM_DELETE_WINDOW', self.cancel)
 
         self.center()
-        self.deiconify()  # become visibile now
+        self.deiconify()
 
         self.initial_focus.focus_set()
 
@@ -81,7 +84,7 @@ class DefaultDialog(SubWindow):
         '''
         box = widgets.Frame(self)
 
-        w = self.button_class(box, text='OK', command=self.ok, default='active')
+        w = self.button_class(box, text='OK', command=self.ok)
         w.pack(side='left', padx=5, pady=5)
         w = self.button_class(box, text='Cancel', command=self.cancel)
         w.pack(side='left', padx=5, pady=5)
@@ -126,15 +129,19 @@ class DefaultDialog(SubWindow):
         '''
         pass  # override
 
+
 class MessageDialog(DefaultDialog):
     def __init__(self, master, title, message):
         self.__message = message
         DefaultDialog.__init__(self, master, title=title)
 
     def body(self, master):
-        mdl = widgets.MarkDownLabel(master,
+        mdl = widgets.MarkDownLabel(
+            master,
             height=1, width=len(self.__message) + 4,
-            text=self.__message)
+            text=self.__message,
+            bg=master['bg']
+        )
         mdl.centralize_text()
         mdl.pack(expand='yes', fill='both', padx=20, pady=20)
         return mdl
@@ -146,6 +153,7 @@ class MessageDialog(DefaultDialog):
         self.bind("<Return>", self.ok)
         self.bind("<Escape>", self.ok)
         box.pack()
+
 
 class MessageBox:
     @staticmethod
@@ -164,6 +172,7 @@ class MessageBox:
             kws.get('message')
         )
 
+
 class OkCancel(DefaultDialog):
     def __init__(self, parent, msg, title=None, **kwargs):
         self.msg = msg
@@ -174,7 +183,8 @@ class OkCancel(DefaultDialog):
         l = widgets.MarkDownLabel(
             parent,
             text=self.msg,
-            width=len(self.msg) + 4
+            width=len(self.msg) + 4,
+            bg=parent['bg']
         )
         l.pack(padx=20, pady=20)
         return l

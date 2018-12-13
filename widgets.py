@@ -6,6 +6,29 @@ from boring import window
 
 
 class BaseWidget(object):
+    def __init__(self, *args, **kwargs):
+        props = kwargs.pop('properties', [])
+        for i in props:
+            setattr(
+                self.__class__,
+                i,
+                property(
+                    fget=self._get_fget_function(i),
+                    fset=self._get_fset_function(i)
+                )
+            )
+        super(BaseWidget, self).__init__(*args, **kwargs)
+
+    def _get_fget_function(self, prop_name):
+        def _function(self):
+            return self[prop_name]
+        return _function
+
+    def _get_fset_function(self, prop_name):
+        def _function(self, value):
+            self[prop_name] = value
+        return _function
+
     def grid(self, *args, **kwargs):
         super(BaseWidget, self).grid(*args, **kwargs)
         return self
@@ -154,6 +177,25 @@ class Label(BaseWidget, window.tk.Label):
     @text.setter
     def text(self, value):
         self['text'] = value
+
+
+class Entry(window.tk.Entry, BaseWidget):
+    def __init__(self, *args, **kwargs):
+        window.tk.Entry.__init__(self, *args, **kwargs)
+        BaseWidget.__init__(self)
+
+
+class Button(window.tk.Button, BaseWidget):
+    def __init__(self, *args, **kwargs):
+        window.tk.Button.__init__(self, *args, **kwargs)
+        BaseWidget.__init__(self)
+
+
+# Fixme
+class MarkDownLabel(window.tk.Label, BaseWidget):
+    def __init__(self, *args, **kwargs):
+        window.tk.Label.__init__(self, *args, **kwargs)
+        BaseWidget.__init__(self)
 
 
 class HorizontalLine(ExtendedCanvas):

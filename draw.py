@@ -268,14 +268,14 @@ class TextDraw(BaseCanvasDraw):
         self.update()
 
 
-class WidgetDraw(BaseCanvasDraw):
-    def __init__(self, canvas, x, y, widget, **kws):
-        properties = ['widget', ]
+class WindowDraw(BaseCanvasDraw):
+    def __init__(self, canvas, x, y, window, **kws):
+        properties = ['window', 'anchor' ]
         BaseCanvasDraw.__init__(
             self,
             canvas,
             [x, y],
-            window=widget,
+            window=window,
             properties=properties,
             **kws
         )
