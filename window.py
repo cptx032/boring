@@ -8,12 +8,17 @@ def import_tkinter():
     try:
         import Tkinter as tk
     except ImportError:
-        try:
-            import tkinter as tk
-        except ImportError:
-            print('You must have Tkinter installed')
-            sys.exit(-1)
+        import tkinter as tk
     return tk
+
+
+def import_filedialog():
+    u"""Import the correct version of TkFileDialog."""
+    try:
+        import tkFileDialog as filedialog
+    except ImportError:
+        from tkinter import filedialog
+    return filedialog
 
 tk = import_tkinter()
 
