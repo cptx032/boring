@@ -495,6 +495,63 @@ class PolygonDraw(BaseCanvasDraw):
         return self.canvas.create_polygon
 
 
+class TriangleDraw(PolygonDraw):
+    def __init__(self, canvas, x, y, width, height, **kwargs):
+        self.__width = width
+        self.__height = height
+        self.__x = x
+        self.__y = y
+        PolygonDraw.__init__(self, canvas, self.coords, **kwargs)
+
+    @property
+    def width(self):
+        return self.__width
+
+    @width.setter
+    def width(self, value):
+        self.__width = value
+        self.update()
+
+    @property
+    def height(self):
+        return self.__height
+
+    @height.setter
+    def height(self, value):
+        self.__height = value
+        self.update()
+
+    @property
+    def x(self):
+        return self.__x
+
+    @x.setter
+    def x(self, value):
+        self.__x = value
+        self.update()
+
+    @property
+    def y(self):
+        return self.__y
+
+    @y.setter
+    def y(self, value):
+        self.__y = value
+        self.update()
+
+    @property
+    def coords(self):
+        return [
+            self.__x, self.__y,
+            self.__x + self.__width, self.__y,
+            (self.__x + self.__width) / 2.0, self.__y + self.__height
+        ]
+
+    @coords.setter
+    def coords(self, value):
+        pass
+
+
 class RoundedRectangleDraw(PolygonDraw):
     def __init__(self, canvas, x, y, _width,
                  height, radius=[2, 2, 2, 2], **kws):
